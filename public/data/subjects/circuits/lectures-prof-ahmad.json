@@ -35,6 +35,32 @@
           "hidden": false
         }
       ]
+    },
+    {
+      "section": "lab",
+      "hidden": false,
+      "items": [
+        {
+          "title": "دارات_عملي_1",
+          "file": "lecture-07.pdf",
+          "hidden": false
+        },
+        {
+          "title": "دارات_عملي_2",
+          "file": "lecture-08.pdf",
+          "hidden": false
+        },
+        {
+          "title": "دارات_عملي_3",
+          "file": "lecture-09.pdf",
+          "hidden": false
+        },
+        {
+          "title": "دارات_عملي_4",
+          "file": "lecture-10.pdf",
+          "hidden": false
+        }
+      ]
     }
   ]
 }
