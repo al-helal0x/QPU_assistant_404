@@ -3,7 +3,38 @@
     {
       "section": "theory",
       "hidden": false,
-      "items": []
+      "items": [
+        {
+          "title": "دارات_نظري_1",
+          "file": "lecture-01.pdf",
+          "hidden": false
+        },
+        {
+          "title": "دارات_نظري2",
+          "file": "lecture-02.pdf",
+          "hidden": false
+        },
+        {
+          "title": "دارات_نظري_3",
+          "file": "lecture-03.pdf",
+          "hidden": false
+        },
+        {
+          "title": "دارات_نظري_4",
+          "file": "lecture-04.pdf",
+          "hidden": false
+        },
+        {
+          "title": "دارات_نظري_5",
+          "file": "lecture-05.pdf",
+          "hidden": false
+        },
+        {
+          "title": "دارات_نظري_6",
+          "file": "lecture-06.pdf",
+          "hidden": false
+        }
+      ]
     }
   ]
 }
