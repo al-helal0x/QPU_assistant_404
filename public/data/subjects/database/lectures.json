@@ -3,13 +3,7 @@
     {
       "section": "theory",
       "hidden": false,
-      "items": [
-        {
-          "title": "المحاضرة 1 — مقدمة SQL",
-          "file": "lecture-01.pdf",
-          "hidden": false
-        }
-      ]
+      "items": []
     }
   ]
 }
