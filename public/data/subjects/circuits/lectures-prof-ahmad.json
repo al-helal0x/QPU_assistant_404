@@ -4,7 +4,11 @@
       "section": "theory",
       "hidden": false,
       "items": [
-        { "title": "المحاضرة 1 — مقدمة", "file": "lecture-01.pdf", "hidden": false }
+        {
+          "title": "المحاضرة 1 — مقدمة",
+          "file": "lecture-01.pdf",
+          "hidden": false
+        }
       ]
     },
     {
