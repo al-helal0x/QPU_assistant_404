@@ -3,12 +3,64 @@
     {
       "section": "theory",
       "hidden": false,
-      "items": []
+      "items": [
+        {
+          "title": "دارات المحاضرة الأولى - نظري",
+          "file": "lecture-01.pdf",
+          "hidden": false
+        },
+        {
+          "title": "دارات المحاضرة الثانية - نظري",
+          "file": "lecture-02.pdf",
+          "hidden": false
+        },
+        {
+          "title": "دارات المحاضرة الثالثة- نظري",
+          "file": "lecture-03.pdf",
+          "hidden": false
+        },
+        {
+          "title": "دارات المحاضرة الرابعة- نظري",
+          "file": "lecture-05.pdf",
+          "hidden": false
+        },
+        {
+          "title": "دارات المحاضرة الخامسة- نظري",
+          "file": "lecture-07.pdf",
+          "hidden": false
+        },
+        {
+          "title": "دارات المحاضرة السادسة- نظري",
+          "file": "lecture-09.pdf",
+          "hidden": false
+        }
+      ]
     },
     {
       "section": "lab",
       "hidden": false,
-      "items": []
+      "items": [
+        {
+          "title": "دارات المحاضرة الأولى - عملي",
+          "file": "lecture-04.pdf",
+          "hidden": false
+        },
+        {
+          "title": "دارات المحاضرة الثانية- عملي",
+          "file": "lecture-06.pdf",
+          "hidden": false
+        },
+        {
+          "title": "دارات المحاضرة الثالثة- عملي",
+          "file": "lecture-08.pdf",
+          "hidden": false
+        },
+        {
+          "title": "دارات المحاضرة الرابعة- عملي",
+          "file": "lecture-10.pdf",
+          "hidden": false
+        }
+      ]
     }
   ]
 }
