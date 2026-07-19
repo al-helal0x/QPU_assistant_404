@@ -2,7 +2,7 @@
   "id": "circuits",
   "name": "الدارات الكهربائية",
   "code": "1130700",
-  "hidden": false,
+  "hidden": true,
   "professorVariants": [
     {
       "professorId": "prof-ahmad",
