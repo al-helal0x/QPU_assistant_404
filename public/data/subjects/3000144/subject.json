@@ -1,0 +1,14 @@
+{
+  "id": "3000144",
+  "name": "الصحة العامة",
+  "code": "3000144",
+  "hidden": false,
+  "professorVariants": [
+    {
+      "professorId": "د.",
+      "professorName": "يوسف علي",
+      "active": true,
+      "lecturesFile": "lectures-د..json"
+    }
+  ]
+}
