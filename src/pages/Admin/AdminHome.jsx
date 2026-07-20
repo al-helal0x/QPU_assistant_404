@@ -1,5 +1,7 @@
 import React, { useEffect, useState } from "react";
 import { Link } from "react-router-dom";
+import PublishPanel from "../../components/admin/PublishPanel.jsx";
+import StudyPlanEditor from "../../components/admin/StudyPlanEditor.jsx";
 
 // ⚠️ ملف مملوك لعضو 3 (لوحة التحكم — الواجهة).
 //
@@ -21,30 +23,78 @@ import { Link } from "react-router-dom";
 // دائماً، وإلا فأي إضافة سابقة غير موجودة بالنسخة المخزَّنة تُفقَد عند أول نشر
 // لاحق يُعيد كتابة الملف كاملاً بناءً عليها. لذلك أضفت `cache: "no-store"` +
 // معامل رابط لكسر أي كاش وسيط (CDN) لا يحترم رؤوس الطلب نفسها.
+//
+// ⚠️ تحديث (2026-07-20، معتمَد بخطة المدير): حذف مادة مباشر من هذي الشاشة، بدل
+// الاضطرار للدخول لصفحة تعديل المادة، + تبويب جديد "تحرير خطة المواد"
+// (StudyPlanEditor.jsx، ملفي أيضاً) لتعديلات القائمة الوصفية (اسم/رمز/ترتيب/
+// إخفاء/إضافة أو إزالة سطر) بمعزل عن محتوى المادة الفعلي.
+//
+// ⚠️ عقد مؤقت (mock) بانتظار تسليم عضو 5 (معتمَد بخطة المدير 2026-07-20):
+// buildSubjectDeletion(slug, { existingSubject, existingStudyPlan }) → pkg —
+// يحذف subject.json + كل lectures*.json المرتبطة (بحسب professorVariants) +
+// مجلد public/pdf/{slug} بالكامل، ويزيل سطر المادة من study-plan.json — بنفس
+// الـ PR (بلا دمج تلقائي أبداً لعمليات الحذف، بحسب قرار المدير الأمني الصريح).
+// عند التسليم الفعلي، استبدل الاستيراد أدناه بـ:
+//   import { buildSubjectDeletion } from "../../lib/githubPublisher.js";
+// واحذف mockBuildSubjectDeletion كاملاً — بقية هذا الملف لا يحتاج أي تعديل آخر.
 
-async function fetchSubjects() {
+export function mockBuildSubjectDeletion(slug, { existingSubject, existingStudyPlan } = {}) {
+  const lectureFiles = existingSubject?.professorVariants?.length
+    ? existingSubject.professorVariants.map((v) => v.lecturesFile || `lectures-${v.professorId}.json`)
+    : ["lectures.json"];
+  const remainingCourses = (existingStudyPlan?.courses ?? []).filter((c) => c.id !== slug);
+  return {
+    __mock: true,
+    kind: "subject-deletion",
+    slug,
+    filesToDelete: [
+      `public/data/subjects/${slug}/subject.json`,
+      ...lectureFiles.map((f) => `public/data/subjects/${slug}/${f}`),
+      `public/pdf/${slug}/ (كل الملفات بداخله)`,
+    ],
+    studyPlanPath: "public/data/study-plan.json",
+    studyPlanJson: { courses: remainingCourses },
+  };
+}
+
+async function fetchStudyPlan() {
   const res = await fetch(`${import.meta.env.BASE_URL}data/study-plan.json?_=${Date.now()}`, {
     cache: "no-store",
   });
   if (!res.ok) throw new Error("تعذّر تحميل قائمة المواد");
-  const data = await res.json();
-  return data?.courses ?? [];
+  return res.json();
 }
 
+async function fetchSubjectDetail(id) {
+  const res = await fetch(`${import.meta.env.BASE_URL}data/subjects/${id}/subject.json?_=${Date.now()}`, {
+    cache: "no-store",
+  });
+  if (!res.ok) return null;
+  return res.json();
+}
+
+const TABS = {
+  LIST: "list",
+  STUDY_PLAN: "studyplan",
+};
+
 export default function AdminHome() {
-  const [subjects, setSubjects] = useState([]);
+  const [tab, setTab] = useState(TABS.LIST);
+  const [studyPlan, setStudyPlan] = useState({ courses: [] });
   const [loading, setLoading] = useState(true);
   const [error, setError] = useState(null);
-  // إخفاء/حذف هنا محلي فقط بواجهة العرض؛ التطبيق الفعلي على البيانات يمر
-  // عبر محرر المادة ← PublishPanel (عضو 5)، لأن الموقع Static بلا خادم.
+  // إخفاء هنا محلي فقط بواجهة العرض (معاينة) — التطبيق الفعلي يمر عبر محرر
+  // المادة (checkbox "إخفاء") ← PublishPanel، لأن الموقع Static بلا خادم.
   const [localOverrides, setLocalOverrides] = useState({});
-  const [markedForDeletion, setMarkedForDeletion] = useState({});
+
+  // تدفّق الحذف: id → "confirming" | "building" | pkg الناتج
+  const [deleteState, setDeleteState] = useState({});
 
   useEffect(() => {
     let cancelled = false;
-    fetchSubjects()
-      .then((list) => {
-        if (!cancelled) setSubjects(list);
+    fetchStudyPlan()
+      .then((plan) => {
+        if (!cancelled) setStudyPlan(plan);
       })
       .catch((err) => {
         if (!cancelled) setError(err.message);
@@ -57,11 +107,32 @@ export default function AdminHome() {
     };
   }, []);
 
+  const subjects = studyPlan.courses ?? [];
+
   function toggleLocalHidden(id) {
     setLocalOverrides((prev) => ({
       ...prev,
       [id]: !(prev[id] ?? subjects.find((s) => s.id === id)?.hidden ?? false),
     }));
+  }
+
+  function askDelete(id) {
+    setDeleteState((prev) => ({ ...prev, [id]: "confirming" }));
+  }
+
+  function cancelDelete(id) {
+    setDeleteState((prev) => {
+      const next = { ...prev };
+      delete next[id];
+      return next;
+    });
+  }
+
+  async function confirmDelete(id) {
+    setDeleteState((prev) => ({ ...prev, [id]: "building" }));
+    const existingSubject = await fetchSubjectDetail(id);
+    const pkg = mockBuildSubjectDeletion(id, { existingSubject, existingStudyPlan: studyPlan });
+    setDeleteState((prev) => ({ ...prev, [id]: pkg }));
   }
 
   if (loading) return <div className="text-text-muted">...جارِ التحميل</div>;
@@ -87,73 +158,168 @@ export default function AdminHome() {
         </div>
       </div>
 
-      {subjects.length === 0 && (
-        <p className="text-sm text-text-muted">لا توجد مواد بعد.</p>
-      )}
+      <div className="flex gap-1 border-b border-border">
+        <button
+          type="button"
+          onClick={() => setTab(TABS.LIST)}
+          className={`px-3 py-2 text-sm ${
+            tab === TABS.LIST
+              ? "border-b-2 border-accent font-medium text-text-h"
+              : "text-text-muted hover:text-text"
+          }`}
+        >
+          قائمة المواد
+        </button>
+        <button
+          type="button"
+          onClick={() => setTab(TABS.STUDY_PLAN)}
+          className={`px-3 py-2 text-sm ${
+            tab === TABS.STUDY_PLAN
+              ? "border-b-2 border-accent font-medium text-text-h"
+              : "text-text-muted hover:text-text"
+          }`}
+        >
+          تحرير خطة المواد
+        </button>
+      </div>
 
-      <ul className="flex flex-col gap-2">
-        {subjects.map((s) => {
-          const hiddenNow = localOverrides[s.id] ?? s.hidden;
-          const marked = Boolean(markedForDeletion[s.id]);
-          return (
-            <li
-              key={s.id}
-              className={`flex flex-wrap items-center justify-between gap-2 rounded-lg border px-4 py-3 ${
-                marked
-                  ? "border-danger-border bg-danger-bg opacity-70"
-                  : hiddenNow
-                  ? "border-warning-border bg-warning-bg"
-                  : "border-border bg-bg-subtle"
-              }`}
-            >
-              <div>
-                <p className="font-medium text-text-h">
-                  {s.name}{" "}
-                  {hiddenNow && (
-                    <span className="ms-2 rounded-full bg-warning-border px-2 py-0.5 text-xs text-warning-text">
-                      مخفي
-                    </span>
+      {tab === TABS.STUDY_PLAN && <StudyPlanEditor />}
+
+      {tab === TABS.LIST && (
+        <>
+          {subjects.length === 0 && (
+            <p className="text-sm text-text-muted">لا توجد مواد بعد.</p>
+          )}
+
+          <ul className="flex flex-col gap-2">
+            {subjects.map((s) => {
+              const hiddenNow = localOverrides[s.id] ?? s.hidden;
+              const del = deleteState[s.id];
+              const confirming = del === "confirming";
+              const building = del === "building";
+              const pkg = del && typeof del === "object" ? del : null;
+
+              return (
+                <li
+                  key={s.id}
+                  className={`flex flex-col gap-2 rounded-lg border px-4 py-3 ${
+                    del
+                      ? "border-danger-border bg-danger-bg"
+                      : hiddenNow
+                      ? "border-warning-border bg-warning-bg"
+                      : "border-border bg-bg-subtle"
+                  }`}
+                >
+                  <div className="flex flex-wrap items-center justify-between gap-2">
+                    <div>
+                      <p className="font-medium text-text-h">
+                        {s.name}{" "}
+                        {hiddenNow && !del && (
+                          <span className="ms-2 rounded-full bg-warning-border px-2 py-0.5 text-xs text-warning-text">
+                            مخفي
+                          </span>
+                        )}
+                      </p>
+                      <p className="text-xs text-text-muted">
+                        {s.id} {s.code ? `· ${s.code}` : ""}
+                      </p>
+                    </div>
+
+                    {!del && (
+                      <div className="flex items-center gap-2">
+                        <Link
+                          to={`/admin/subject/${s.id}`}
+                          className="rounded-md border border-border px-3 py-1 text-xs text-text hover:bg-bg-elevated"
+                        >
+                          تعديل
+                        </Link>
+                        <button
+                          type="button"
+                          onClick={() => toggleLocalHidden(s.id)}
+                          className="rounded-md border border-border px-3 py-1 text-xs text-text hover:bg-bg-elevated"
+                        >
+                          {hiddenNow ? "إظهار" : "إخفاء"}
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => askDelete(s.id)}
+                          className="rounded-md border border-danger-border bg-danger-bg px-3 py-1 text-xs text-danger-text hover:opacity-80"
+                        >
+                          حذف
+                        </button>
+                      </div>
+                    )}
+                  </div>
+
+                  {confirming && (
+                    <div className="flex flex-wrap items-center gap-2 rounded-md border border-danger-border bg-bg p-3 text-sm">
+                      <span className="text-danger-text">
+                        ⚠️ هذا حذف نهائي: سيُزال subject.json وكل ملفات المحاضرات وكل PDF
+                        المرتبطة بهذي المادة، ويُخرَج سطرها من قائمة المواد. لا رجعة عنه إلا
+                        بإعادة رفع المحتوى من الصفر. متأكد؟
+                      </span>
+                      <div className="ms-auto flex gap-2">
+                        <button
+                          type="button"
+                          onClick={() => confirmDelete(s.id)}
+                          className="rounded-md bg-danger-border px-3 py-1 text-xs font-medium text-white hover:opacity-90"
+                        >
+                          نعم، احذف نهائياً
+                        </button>
+                        <button
+                          type="button"
+                          onClick={() => cancelDelete(s.id)}
+                          className="rounded-md border border-border px-3 py-1 text-xs text-text hover:bg-bg-elevated"
+                        >
+                          إلغاء
+                        </button>
+                      </div>
+                    </div>
                   )}
-                </p>
-                <p className="text-xs text-text-muted">
-                  {s.id} {s.code ? `· ${s.code}` : ""}
-                </p>
-              </div>
-              <div className="flex items-center gap-2">
-                <Link
-                  to={`/admin/subject/${s.id}`}
-                  className="rounded-md border border-border px-3 py-1 text-xs text-text hover:bg-bg-elevated"
-                >
-                  تعديل
-                </Link>
-                <button
-                  type="button"
-                  onClick={() => toggleLocalHidden(s.id)}
-                  className="rounded-md border border-border px-3 py-1 text-xs text-text hover:bg-bg-elevated"
-                >
-                  {hiddenNow ? "إظهار" : "إخفاء"}
-                </button>
-                <button
-                  type="button"
-                  onClick={() =>
-                    setMarkedForDeletion((prev) => ({ ...prev, [s.id]: !prev[s.id] }))
-                  }
-                  className="rounded-md border border-danger-border bg-danger-bg px-3 py-1 text-xs text-danger-text hover:opacity-80"
-                >
-                  {markedForDeletion[s.id] ? "إلغاء الحذف" : "حذف"}
-                </button>
-              </div>
-            </li>
-          );
-        })}
-      </ul>
 
-      {(Object.keys(localOverrides).length > 0 || Object.values(markedForDeletion).some(Boolean)) && (
-        <p className="text-xs text-text-muted">
-          ⚠️ تغييرات الإخفاء/الحذف أعلاه محلية بالمتصفح فقط للمعاينة (الموقع Static
-          بلا خادم) — افتح "تعديل" على كل مادة وانشر التغيير فعلياً عبر لوحة النشر
-          بالأسفل ليتم حفظه.
-        </p>
+                  {building && (
+                    <p className="text-xs text-text-muted">...جارِ تجهيز الحذف</p>
+                  )}
+
+                  {pkg && (
+                    <div className="rounded-md border border-border bg-bg p-3">
+                      {pkg.__mock ? (
+                        <div className="flex flex-col gap-2">
+                          <p className="rounded-md border border-warning-border bg-warning-bg p-2 text-xs text-warning-text">
+                            معاينة فقط — الحذف الفعلي بانتظار تسليم عضو 5 (
+                            <code>buildSubjectDeletion</code>). لا شيء حُذف على GitHub بعد.
+                          </p>
+                          <p className="text-xs text-text-muted">سيُحذَف عند التفعيل الفعلي:</p>
+                          <ul className="list-inside list-disc text-xs text-text-muted">
+                            {pkg.filesToDelete.map((f) => (
+                              <li key={f}>{f}</li>
+                            ))}
+                          </ul>
+                          <button
+                            type="button"
+                            onClick={() => cancelDelete(s.id)}
+                            className="self-start rounded-md border border-border px-3 py-1 text-xs text-text hover:bg-bg-elevated"
+                          >
+                            إغلاق المعاينة
+                          </button>
+                        </div>
+                      ) : (
+                        <PublishPanel pkg={pkg} />
+                      )}
+                    </div>
+                  )}
+                </li>
+              );
+            })}
+          </ul>
+
+          {Object.keys(localOverrides).length > 0 && (
+            <p className="text-xs text-text-muted">
+              ⚠️ تغييرات الإخفاء أعلاه محلية بالمتصفح فقط للمعاينة (الموقع Static بلا خادم) —
+              افتح "تعديل" على كل مادة وانشر التغيير فعلياً عبر لوحة النشر ليتم حفظه.
+            </p>
+          )}
+        </>
       )}
     </div>
   );
