@@ -1,0 +1,14 @@
+{
+  "id": "1120900",
+  "name": "تحليل النظم والإشارات",
+  "code": "1120900",
+  "hidden": false,
+  "professorVariants": [
+    {
+      "professorId": "د.",
+      "professorName": "خولة قصاص",
+      "active": true,
+      "lecturesFile": "lectures-د..json"
+    }
+  ]
+}
