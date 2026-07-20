@@ -23,7 +23,8 @@
               "id": "math-1",
               "name": "رياضيات (1)",
               "code": "4310000",
-              "hours": 4
+              "hours": 4,
+              "hidden": true
             },
             {
               "id": "4110000",
@@ -450,6 +451,96 @@
             ]
           },
           "totalHours": 17
+        }
+      ]
+    }
+  ],
+  "electiveGroups": [
+    {
+      "id": "university-electives",
+      "label": "متطلبات الجامعة الاختيارية",
+      "creditHours": 8,
+      "courses": [
+        {
+          "id": "3120001",
+          "name": "اللغة العربية (2)",
+          "code": "3120001",
+          "hours": 2,
+          "theoryHours": 2,
+          "labHours": 0,
+          "prerequisite": "اللغة العربية (1)"
+        },
+        {
+          "id": "3230002",
+          "name": "مهارات الكتابة باللغة الانكليزية",
+          "code": "3230002",
+          "hours": 2,
+          "theoryHours": 2,
+          "labHours": 0
+        },
+        {
+          "id": "3230004",
+          "name": "مهارات الاتصال باللغة الانكليزية",
+          "code": "3230004",
+          "hours": 2,
+          "theoryHours": 2,
+          "labHours": 0
+        },
+        {
+          "id": "2000022",
+          "name": "علم الاقتصاد",
+          "code": "2000022",
+          "hours": 2,
+          "theoryHours": 2,
+          "labHours": 0
+        },
+        {
+          "id": "4530001",
+          "name": "بيئة ومجتمع",
+          "code": "4530001",
+          "hours": 2,
+          "theoryHours": 2,
+          "labHours": 0
+        },
+        {
+          "id": "3000144",
+          "name": "الصحة العامة",
+          "code": "3000144",
+          "hours": 2,
+          "theoryHours": 2,
+          "labHours": 0
+        },
+        {
+          "id": "2000246",
+          "name": "الثقافة القومية",
+          "code": "2000246",
+          "hours": 2,
+          "theoryHours": 2,
+          "labHours": 0
+        },
+        {
+          "id": "4000347",
+          "name": "قضايا معاصرة",
+          "code": "4000347",
+          "hours": 2,
+          "theoryHours": 2,
+          "labHours": 0
+        },
+        {
+          "id": "3000448",
+          "name": "الحضارات (العربية والإسلامية والعالمية)",
+          "code": "3000448",
+          "hours": 3,
+          "theoryHours": 2,
+          "labHours": 0
+        },
+        {
+          "id": "3000231",
+          "name": "فن الحوار والخطابة",
+          "code": "3000231",
+          "hours": 2,
+          "theoryHours": 2,
+          "labHours": 0
         }
       ]
     }
