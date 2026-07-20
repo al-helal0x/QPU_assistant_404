@@ -1,0 +1,14 @@
+{
+  "id": "math-1",
+  "name": "رياضيات (1)",
+  "code": "4310000",
+  "hidden": false,
+  "professorVariants": [
+    {
+      "professorId": "الدكتور",
+      "professorName": "د. يوسف كاجان",
+      "active": true,
+      "lecturesFile": "lectures-الدكتور.json"
+    }
+  ]
+}
