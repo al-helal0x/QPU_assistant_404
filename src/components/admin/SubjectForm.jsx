@@ -31,20 +31,25 @@ function slugifyTitle(name) {
  *  - initialLecturesByVariant?: { [professorId|"_default"]: { sections: [...] } }
  *      بيانات lectures.json/lectures-{prof}.json الحالية، بلا فلترة hidden (لوحة تحكم).
  *  - existingIds?: string[] — لتفادي تكرار الـ id عند مادة جديدة
+ *  - prefill?: { id, name, code } | null — تعبئة مبدئية من CurriculumCoursePicker
+ *      (مادة جديدة مرتبطة بعنصر من الخطة الدراسية الرسمية). لا تأثير لها عند التعديل.
  */
 export default function SubjectForm({
   initialSubject = null,
   initialLecturesByVariant = {},
   existingIds = [],
+  prefill = null,
 }) {
   const isEditing = Boolean(initialSubject?.id);
   const existingVariants = initialSubject?.professorVariants ?? [];
 
-  const [name, setName] = useState(initialSubject?.name ?? "");
-  const [code, setCode] = useState(initialSubject?.code ?? "");
+  const [name, setName] = useState(initialSubject?.name ?? prefill?.name ?? "");
+  const [code, setCode] = useState(initialSubject?.code ?? prefill?.code ?? "");
   const [hidden, setHidden] = useState(initialSubject?.hidden ?? false);
-  const [slug, setSlug] = useState(initialSubject?.id ?? "");
-  const [slugTouched, setSlugTouched] = useState(isEditing);
+  const [slug, setSlug] = useState(initialSubject?.id ?? prefill?.id ?? "");
+  // slug من الخطة (prefill.id) مؤكَّد وصحيح أصلاً (نفس id بالخطة الرسمية)، فلا داعي
+  // لإعادة اقتراحه تلقائياً من الاسم كما لو كُتب يدوياً.
+  const [slugTouched, setSlugTouched] = useState(isEditing || Boolean(prefill));
 
   const [multiProfessor, setMultiProfessor] = useState(existingVariants.length > 0);
 
@@ -91,6 +96,15 @@ export default function SubjectForm({
 
   const [rawFiles, setRawFiles] = useState([]);
   const [fileMeta, setFileMeta] = useState({}); // key(fileKey) -> { title, section, hidden }
+  // يتغيّر بعد كل نشر ناجح لإجبار FileUploaderWidget على إعادة التركيب (remount)
+  // فيصفر قائمته الداخلية — يمنع نشر نفس الملفات مرة ثانية بالغلط.
+  const [uploaderResetKey, setUploaderResetKey] = useState(0);
+
+  function handlePublishSuccess() {
+    setRawFiles([]);
+    setFileMeta({});
+    setUploaderResetKey((k) => k + 1);
+  }
 
   function handleFilesSelected(files) {
     setRawFiles(files);
