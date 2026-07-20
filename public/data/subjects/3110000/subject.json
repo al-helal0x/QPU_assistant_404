@@ -1,0 +1,14 @@
+{
+  "id": "3110000",
+  "name": "اللغة العربية (1)",
+  "code": "3110000",
+  "hidden": false,
+  "professorVariants": [
+    {
+      "professorId": "الدكتورة",
+      "professorName": "د. ريما دياب",
+      "active": true,
+      "lecturesFile": "lectures-الدكتورة.json"
+    }
+  ]
+}
