@@ -95,6 +95,18 @@
       "name": "الصحة العامة",
       "code": "3000144",
       "hidden": false
+    },
+    {
+      "id": "technical-english-2",
+      "name": "اللغة الإنجليزية الفنية (2)",
+      "code": "technical-english-2",
+      "hidden": false
+    },
+    {
+      "id": "3120001",
+      "name": "اللغة العربية (2)",
+      "code": "3120001",
+      "hidden": false
     }
   ]
 }
