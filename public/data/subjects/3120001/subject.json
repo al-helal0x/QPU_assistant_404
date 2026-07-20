@@ -1,0 +1,14 @@
+{
+  "id": "3120001",
+  "name": "اللغة العربية (2)",
+  "code": "3120001",
+  "hidden": false,
+  "professorVariants": [
+    {
+      "professorId": "د.",
+      "professorName": "سوسن المقداد",
+      "active": true,
+      "lecturesFile": "lectures-د..json"
+    }
+  ]
+}
