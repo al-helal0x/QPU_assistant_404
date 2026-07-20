@@ -1,0 +1,14 @@
+{
+  "id": "1120201",
+  "name": "المنطق الرقمي",
+  "code": "1120201",
+  "hidden": false,
+  "professorVariants": [
+    {
+      "professorId": "د.",
+      "professorName": "معاذ النهار",
+      "active": true,
+      "lecturesFile": "lectures-د..json"
+    }
+  ]
+}
