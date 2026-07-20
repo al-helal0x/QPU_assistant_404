@@ -39,6 +39,7 @@ export default function SubjectForm({
   initialLecturesByVariant = {},
   existingIds = [],
   prefill = null,
+  existingStudyPlan = { courses: [] },
 }) {
   const isEditing = Boolean(initialSubject?.id);
   const existingVariants = initialSubject?.professorVariants ?? [];
@@ -168,6 +169,7 @@ export default function SubjectForm({
           : {}),
         ...(initialSubject ? { existingSubject: initialSubject } : {}),
         existingLectures: { sections },
+        existingStudyPlan,
       };
 
       const built = buildSubjectPackage({ subjectMeta, files: filesForPackage });
@@ -191,6 +193,7 @@ export default function SubjectForm({
     setActive,
     sections,
     initialSubject,
+    existingStudyPlan,
   ]);
 
   return (

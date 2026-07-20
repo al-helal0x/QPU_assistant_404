@@ -14,11 +14,10 @@ import { findCurriculumCourse } from "../../lib/curriculum.js";
 // نموذج فاضٍ مباشرة. رابط `?course=<id>` (مثلاً من زر بصفحة StudyPlan) يختار
 // المادة تلقائياً بلا حاجة للبحث اليدوي. "تجاهل" يرجع لنموذج فاضٍ كالسابق.
 
-async function fetchExistingIds() {
+async function fetchStudyPlan() {
   const res = await fetch(`${import.meta.env.BASE_URL}data/study-plan.json`);
-  if (!res.ok) return [];
-  const data = await res.json();
-  return (data?.courses ?? []).map((c) => c.id);
+  if (!res.ok) return { courses: [] };
+  return res.json();
 }
 
 async function fetchSubject(id) {
@@ -58,7 +57,8 @@ export default function AdminSubjectEditor() {
   const [notFound, setNotFound] = useState(false);
   const [subject, setSubject] = useState(null);
   const [lecturesByVariant, setLecturesByVariant] = useState({});
-  const [existingIds, setExistingIds] = useState([]);
+  const [studyPlan, setStudyPlan] = useState({ courses: [] });
+  const existingIds = studyPlan.courses.map((c) => c.id);
 
   // undefined = لسا ما اختار (اعرض القائمة) | null = اختار "يدوياً" | object = مادة من الخطة
   const [pickedCourse, setPickedCourse] = useState(undefined);
@@ -66,10 +66,11 @@ export default function AdminSubjectEditor() {
   useEffect(() => {
     let cancelled = false;
     async function load() {
-      const ids = await fetchExistingIds();
+      const plan = await fetchStudyPlan();
+      const ids = plan.courses.map((c) => c.id);
       if (!isEditing) {
         if (!cancelled) {
-          setExistingIds(ids);
+          setStudyPlan(plan);
           setLoading(false);
         }
         const preselectId = searchParams.get("course");
@@ -90,7 +91,7 @@ export default function AdminSubjectEditor() {
       }
       const lectures = await fetchAllLectures(id, subj);
       if (!cancelled) {
-        setExistingIds(ids);
+        setStudyPlan(plan);
         setSubject(subj);
         setLecturesByVariant(lectures);
         setLoading(false);
@@ -124,6 +125,7 @@ export default function AdminSubjectEditor() {
           initialLecturesByVariant={lecturesByVariant}
           existingIds={existingIds}
           prefill={!isEditing ? pickedCourse : null}
+          existingStudyPlan={studyPlan}
         />
       )}
     </div>

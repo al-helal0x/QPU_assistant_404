@@ -15,6 +15,9 @@
 //                                  // ودكتور جديد كلياً يصير active فقط لو كان الأول إطلاقاً
 //     existingSubject?: object,   // subject.json الحالي (عند التعديل، لحفظ باقي الدكاترة)
 //     existingLectures?: object,  // lectures*.json الحالي (عند الإضافة على مادة موجودة)
+//     existingStudyPlan?: object, // public/data/study-plan.json الحالي كاملاً — لازم يُمرَّر
+//                                  // بأحدث نسخة معروفة (نفس نمط existingSubject/existingLectures)
+//                                  // وإلا ستُفقَد مواد أخرى غير مادة هذا النشر من courses
 //   }
 //   files: Array<{
 //     file: File,                 // ملف PDF من جهاز المدير
@@ -26,8 +29,8 @@
 //   }>
 //
 //   → pkg: {
-//     slug, subjectPath, lecturesPath, pdfDir,
-//     subjectJson, lecturesJson,
+//     slug, subjectPath, lecturesPath, pdfDir, studyPlanPath,
+//     subjectJson, lecturesJson, studyPlanJson,
 //     pdfFiles: [{ path, file, name }],  // name = نفس اسم الملف الظاهر (title.pdf)
 //   }
 //
@@ -174,10 +177,32 @@ export function buildSubjectPackage({ subjectMeta, files = [] }) {
 
   const lecturesJson = { sections };
 
+  // --- تحديث public/data/study-plan.json (إصلاح تقرير عضو 6، 2026-07-19) ---
+  // النشر كان يكتب subject.json/lectures.json فقط، وما كان يلمس study-plan.json
+  // إطلاقاً — فالمادة الجديدة/المعدَّلة كانت تبقى غير مرئية بصفحتي "المواد" و"الخطة
+  // الدراسية" (كلاهما يقرآن من study-plan.json حصراً) حتى لو نُشرت بنجاح فعلياً.
+  const existingCourses = Array.isArray(subjectMeta.existingStudyPlan?.courses)
+    ? [...subjectMeta.existingStudyPlan.courses]
+    : [];
+  const courseEntry = {
+    id: slug,
+    name: subjectJson.name,
+    code: subjectJson.code,
+    hidden: Boolean(subjectJson.hidden),
+  };
+  const courseIdx = existingCourses.findIndex((c) => c.id === slug);
+  const courses =
+    courseIdx >= 0
+      ? existingCourses.map((c, i) => (i === courseIdx ? { ...c, ...courseEntry } : c)) // تعديل — لا تكرار
+      : [...existingCourses, courseEntry]; // إنشاء جديد
+  const studyPlanJson = { ...(subjectMeta.existingStudyPlan || {}), courses };
+
   return {
     slug,
     subjectPath: `public/data/subjects/${slug}/subject.json`,
     lecturesPath: `public/data/subjects/${slug}/${lecturesFileName}`,
+    studyPlanPath: "public/data/study-plan.json",
+    studyPlanJson,
     pdfDir: `public/pdf/${slug}`,
     subjectJson,
     lecturesJson,
@@ -298,6 +323,16 @@ export async function publishToGitHub({
     base64Content: textToBase64(JSON.stringify(pkg.lecturesJson, null, 2)),
   });
 
+  await putFile({
+    owner,
+    repo,
+    path: pkg.studyPlanPath,
+    branch,
+    token,
+    message: `تحديث خطة المواد — ${pkg.slug}`,
+    base64Content: textToBase64(JSON.stringify(pkg.studyPlanJson, null, 2)),
+  });
+
   for (const pdf of pkg.pdfFiles) {
     const base64Content = await fileToBase64(pdf.file);
     await putFile({
@@ -371,6 +406,7 @@ export async function exportPackageAsZip(pkg) {
 
   zip.file(pkg.subjectPath, JSON.stringify(pkg.subjectJson, null, 2));
   zip.file(pkg.lecturesPath, JSON.stringify(pkg.lecturesJson, null, 2));
+  zip.file(pkg.studyPlanPath, JSON.stringify(pkg.studyPlanJson, null, 2));
   for (const pdf of pkg.pdfFiles) {
     zip.file(pdf.path, pdf.file);
   }

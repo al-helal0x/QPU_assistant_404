@@ -14,11 +14,10 @@ import { buildSubjectPackage } from "../../lib/githubPublisher.js";
 // يظهر أثرهما بالحزمة المنشورة فعلياً — قيد معروف بتطبيق عضو 5 الحالي، ذكرته
 // بسجلي (member-3-log.md) للمراجعة.
 
-async function fetchSubjects() {
+async function fetchStudyPlan() {
   const res = await fetch(`${import.meta.env.BASE_URL}data/study-plan.json`);
-  if (!res.ok) return [];
-  const data = await res.json();
-  return data?.courses ?? [];
+  if (!res.ok) return { courses: [] };
+  return res.json();
 }
 
 async function fetchSubjectDetail(id) {
@@ -34,7 +33,8 @@ async function fetchLectures(id, filename) {
 }
 
 export default function AdminSectionsManager() {
-  const [subjects, setSubjects] = useState([]);
+  const [studyPlan, setStudyPlan] = useState({ courses: [] });
+  const subjects = studyPlan.courses;
   const [selectedId, setSelectedId] = useState("");
   const [subjectDetail, setSubjectDetail] = useState(null);
   const [activeVariant, setActiveVariant] = useState(null); // كائن professorVariants الحالي أو null
@@ -42,7 +42,7 @@ export default function AdminSectionsManager() {
   const [loading, setLoading] = useState(false);
 
   useEffect(() => {
-    fetchSubjects().then(setSubjects);
+    fetchStudyPlan().then(setStudyPlan);
   }, []);
 
   useEffect(() => {
@@ -104,6 +104,7 @@ export default function AdminSectionsManager() {
             : {}),
           existingSubject: subjectDetail,
           existingLectures: { sections },
+          existingStudyPlan: studyPlan,
         },
         files: [],
       });
