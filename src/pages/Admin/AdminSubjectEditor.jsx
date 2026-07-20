@@ -1,11 +1,18 @@
 import React, { useEffect, useState } from "react";
-import { useParams } from "react-router-dom";
+import { useParams, useSearchParams } from "react-router-dom";
 import SubjectForm from "../../components/admin/SubjectForm.jsx";
+import CurriculumCoursePicker from "../../components/admin/CurriculumCoursePicker.jsx";
+import { findCurriculumCourse } from "../../lib/curriculum.js";
 
 // ⚠️ ملف مملوك لعضو 3 — محرر المادة (إضافة/تعديل).
 // يجلب subject.json + كل ملفات lectures*.json المرتبطة به مباشرة (بدون
 // useSubjectData الخاص بعضو 4، لأن ذاك الـ hook يستبعد العناصر المخفية
 // عن قصد للطلاب — لوحة التحكم بالعكس يجب أن تُظهر كل شيء بما فيه المخفي).
+//
+// ⚠️ تحديث: عند إضافة مادة جديدة (لا id بالرابط)، تُعرض أولاً قائمة اختيار
+// من الخطة الدراسية الرسمية (curriculum.json عبر CurriculumCoursePicker) بدل
+// نموذج فاضٍ مباشرة. رابط `?course=<id>` (مثلاً من زر بصفحة StudyPlan) يختار
+// المادة تلقائياً بلا حاجة للبحث اليدوي. "تجاهل" يرجع لنموذج فاضٍ كالسابق.
 
 async function fetchExistingIds() {
   const res = await fetch(`${import.meta.env.BASE_URL}data/study-plan.json`);
@@ -44,6 +51,7 @@ async function fetchAllLectures(id, subject) {
 
 export default function AdminSubjectEditor() {
   const { id } = useParams();
+  const [searchParams] = useSearchParams();
   const isEditing = Boolean(id);
 
   const [loading, setLoading] = useState(isEditing);
@@ -51,6 +59,9 @@ export default function AdminSubjectEditor() {
   const [subject, setSubject] = useState(null);
   const [lecturesByVariant, setLecturesByVariant] = useState({});
   const [existingIds, setExistingIds] = useState([]);
+
+  // undefined = لسا ما اختار (اعرض القائمة) | null = اختار "يدوياً" | object = مادة من الخطة
+  const [pickedCourse, setPickedCourse] = useState(undefined);
 
   useEffect(() => {
     let cancelled = false;
@@ -60,6 +71,11 @@ export default function AdminSubjectEditor() {
         if (!cancelled) {
           setExistingIds(ids);
           setLoading(false);
+        }
+        const preselectId = searchParams.get("course");
+        if (preselectId && !ids.includes(preselectId)) {
+          const course = await findCurriculumCourse(preselectId);
+          if (!cancelled && course) setPickedCourse(course);
         }
         return;
       }
@@ -84,23 +100,32 @@ export default function AdminSubjectEditor() {
     return () => {
       cancelled = true;
     };
-  }, [id, isEditing]);
+  }, [id, isEditing, searchParams]);
 
   if (loading) return <div className="text-text-muted">...جارِ التحميل</div>;
   if (isEditing && notFound) {
     return <div className="text-danger-text">المادة "{id}" غير موجودة.</div>;
   }
 
+  const showPicker = !isEditing && pickedCourse === undefined;
+
   return (
     <div className="flex flex-col gap-4">
       <h1 className="text-xl font-bold text-text-h">
         {isEditing ? `تعديل: ${subject?.name ?? id}` : "إضافة مادة جديدة"}
       </h1>
-      <SubjectForm
-        initialSubject={subject}
-        initialLecturesByVariant={lecturesByVariant}
-        existingIds={existingIds}
-      />
+
+      {showPicker ? (
+        <CurriculumCoursePicker existingIds={existingIds} onPick={setPickedCourse} />
+      ) : (
+        <SubjectForm
+          key={isEditing ? id : pickedCourse?.id ?? "manual"}
+          initialSubject={subject}
+          initialLecturesByVariant={lecturesByVariant}
+          existingIds={existingIds}
+          prefill={!isEditing ? pickedCourse : null}
+        />
+      )}
     </div>
   );
 }
