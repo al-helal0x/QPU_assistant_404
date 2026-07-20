@@ -1,19 +1,22 @@
 {
   "courses": [
-    { "id": "3210000",
+    {
+      "id": "3210000",
       "name": "اللغة الإنجليزية (1)",
       "code": "3210000",
-      "hidden": false 
+      "hidden": false
     },
-    { "id": "4110000",
+    {
+      "id": "4110000",
       "name": "الفيزياء (1)",
       "code": "4110000",
-      "hidden": false 
+      "hidden": false
     },
-    { "id": "math-1",
+    {
+      "id": "math-1",
       "name": "رياضيات (1)",
       "code": "4310000",
-      "hidden": false 
+      "hidden": false
     },
     {
       "id": "circuits",
@@ -61,6 +64,12 @@
       "id": "programming-1",
       "name": "برمجة (1)",
       "code": "1110502",
+      "hidden": false
+    },
+    {
+      "id": "4320005",
+      "name": "رياضيات متقطعة",
+      "code": "4320005",
       "hidden": false
     }
   ]
