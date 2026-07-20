@@ -1,0 +1,14 @@
+{
+  "id": "1310000",
+  "name": "ورشات هندسية",
+  "code": "1310000",
+  "hidden": false,
+  "professorVariants": [
+    {
+      "professorId": "د.",
+      "professorName": "كمال سكيكر",
+      "active": true,
+      "lecturesFile": "lectures-د..json"
+    }
+  ]
+}
