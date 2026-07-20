@@ -1,0 +1,14 @@
+{
+  "id": "programming-1",
+  "name": "برمجة (1)",
+  "code": "1110502",
+  "hidden": false,
+  "professorVariants": [
+    {
+      "professorId": "د.",
+      "professorName": "علاء السرحان",
+      "active": true,
+      "lecturesFile": "lectures-د..json"
+    }
+  ]
+}
