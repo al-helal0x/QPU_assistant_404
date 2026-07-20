@@ -1,7 +1,28 @@
 {
   "courses": [
-    { "id": "circuits", "name": "الدارات الكهربائية", "code": "1130700", "hidden": false },
-    { "id": "database", "name": "قواعد المعطيات", "code": "1140310", "hidden": false },
-    { "id": "computer-skills", "name": "مهارات الحاسوب", "code": "1110500", "hidden": false }
+    {
+      "id": "circuits",
+      "name": "الدارات الكهربائية",
+      "code": "1130700",
+      "hidden": false
+    },
+    {
+      "id": "database",
+      "name": "قواعد المعطيات",
+      "code": "1140310",
+      "hidden": false
+    },
+    {
+      "id": "computer-skills",
+      "name": "مهارات الحاسوب",
+      "code": "1110500",
+      "hidden": false
+    },
+    {
+      "id": "3110000",
+      "name": "اللغة العربية (1)",
+      "code": "3110000",
+      "hidden": false
+    }
   ]
 }
