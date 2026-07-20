@@ -1,0 +1,14 @@
+{
+  "id": "technical-english-2",
+  "name": "لغة إنجليزية تخصصية (2)",
+  "code": "3210001",
+  "hidden": false,
+  "professorVariants": [
+    {
+      "professorId": "د.",
+      "professorName": "وعد الزعبي",
+      "active": true,
+      "lecturesFile": "lectures-د..json"
+    }
+  ]
+}
