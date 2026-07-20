@@ -18,7 +18,9 @@
 //   }
 //   files: Array<{
 //     file: File,                 // ملف PDF من جهاز المدير
-//     title: string,               // عنوان المحاضرة/الملف
+//     title: string,               // عنوان المحاضرة/الملف — يُشتق منه اسم الملف الفعلي
+//                                  // مباشرة (title.pdf، بعد تنظيف الرموز غير الصالحة)،
+//                                  // + لاحقة رقمية (_2, _3...) تلقائياً عند تكرار نفس الاسم
 //     section: "theory"|"lab"|"extra"|"exam", // مفاتيح SECTION_LABELS (عضو 1/التسليم الثابت)
 //     hidden?: boolean,
 //   }>
@@ -26,7 +28,7 @@
 //   → pkg: {
 //     slug, subjectPath, lecturesPath, pdfDir,
 //     subjectJson, lecturesJson,
-//     pdfFiles: [{ path, file, name }],
+//     pdfFiles: [{ path, file, name }],  // name = نفس اسم الملف الظاهر (title.pdf)
 //   }
 //
 // publishToGitHub({ token, owner, repo, pkg, baseBranch?, autoMerge? }) → { prUrl, branch, merged, mergeError? }
@@ -36,8 +38,15 @@
 
 const SECTION_ORDER = ["theory", "lab", "extra", "exam"];
 
-function pad2(n) {
-  return String(n).padStart(2, "0");
+/** يحوّل الاسم اللي يكتبه الآدمن إلى اسم ملف صالح — يحافظ على العربي/الأرقام،
+ * يشيل امتداد .pdf لو كتبه الآدمن بنفسه (تفادي .pdf.pdf)، يشيل رموز غير مسموحة
+ * بأنظمة الملفات/الروابط، ويحوّل المسافات لـ "_" (نفس نمط "دارات_نظري_1"). */
+function sanitizeFileTitle(title) {
+  return String(title || "")
+    .trim()
+    .replace(/\.pdf$/i, "")
+    .replace(/[\\/:*?"<>|؟،]/g, "")
+    .replace(/\s+/g, "_");
 }
 
 /** يبني حزمة الملفات الجاهزة (subject.json, lectures.json, مسارات PDF)
@@ -110,24 +119,26 @@ export function buildSubjectPackage({ subjectMeta, files = [] }) {
     ? subjectMeta.existingLectures.sections.map((s) => ({ ...s, items: [...(s.items || [])] }))
     : [];
 
-  // رقم تسلسلي عام يكمل بعد آخر رقم موجود بأي قسم (تسمية موحّدة: lecture-01.pdf...)
-  let globalCounter = existingSections.reduce(
-    (max, s) => Math.max(max, s.items?.length || 0),
-    0
-  );
-  const usedNumbers = new Set();
+  // --- تسمية الملف: تُشتق من الاسم اللي يختاره الآدمن للعرض (title)، + .pdf دايماً ---
+  // (تعديل بطلب المدير: لا ترقيم تلقائي lecture-NN — الاسم الظاهر بقسم المادة
+  // هو نفسه اسم الملف الفعلي على GitHub، فقط مع فرض امتداد .pdf في النهاية).
+  const usedNames = new Set();
   existingSections.forEach((s) =>
     (s.items || []).forEach((it) => {
-      const m = /lecture-(\d+)\.pdf$/.exec(it.file || "");
-      if (m) usedNumbers.add(Number(m[1]));
+      if (it.file) usedNames.add(it.file);
     })
   );
-  function nextNumber() {
-    do {
-      globalCounter += 1;
-    } while (usedNumbers.has(globalCounter));
-    usedNumbers.add(globalCounter);
-    return globalCounter;
+
+  function uniqueFileName(title, fallback) {
+    const base = sanitizeFileTitle(title) || sanitizeFileTitle(fallback) || "ملف";
+    let fileName = `${base}.pdf`;
+    let i = 2;
+    while (usedNames.has(fileName)) {
+      fileName = `${base}_${i}.pdf`;
+      i += 1;
+    }
+    usedNames.add(fileName);
+    return fileName;
   }
 
   const pdfFiles = [];
@@ -140,12 +151,12 @@ export function buildSubjectPackage({ subjectMeta, files = [] }) {
       sectionsBySection.set(sectionKey, fresh);
     }
     const target = sectionsBySection.get(sectionKey);
-    const num = nextNumber();
-    const fileName = `lecture-${pad2(num)}.pdf`;
+    const displayTitle = entry.title || entry.file?.name || "ملف";
+    const fileName = uniqueFileName(entry.title, entry.file?.name);
     const path = `public/pdf/${slug}/${fileName}`;
 
     target.items.push({
-      title: entry.title || entry.file?.name || fileName,
+      title: displayTitle,
       file: fileName,
       hidden: Boolean(entry.hidden),
     });
