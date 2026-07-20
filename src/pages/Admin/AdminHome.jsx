@@ -10,9 +10,22 @@ import { Link } from "react-router-dom";
 // مصدر موجود فعلاً من اليوم الأول (يحوي id/name/code/hidden لكل مادة).
 // إن أنشأ المدير أو عضو 4 فهرساً مخصصاً لاحقاً، هذا الملف فقط من يحتاج تعديل
 // نقطة الجلب أدناه (fetchSubjects) وبقية الصفحة تبقى كما هي.
+//
+// ⚠️ إصلاح (تقرير عضو 6، 2026-07-19: "المواد المضافة لا تظهر بصفحة المواد" —
+// تكرّر رغم إصلاح buildSubjectPackage السابق): تأكّدت فعلياً من الريبو المنشور
+// أن مادة "1110501" منشورة (subject.json + lectures موجودان) لكنها غائبة كلياً
+// عن study-plan.json. السبب: `fetch()` العادي لملف ثابت كهذا قابل لأن يرجع نسخة
+// مخزَّنة مؤقتاً (كاش المتصفح أو GitHub Pages/CDN) بدل أحدث نسخة فعلية على main.
+// أي شاشة بلوحة التحكم تقرأ study-plan.json **كأساس لدمج/كتابة** لاحقة (هنا
+// وبـ AdminSubjectEditor.jsx وAdminSectionsManager.jsx) يجب أن تقرأ نسخة طازجة
+// دائماً، وإلا فأي إضافة سابقة غير موجودة بالنسخة المخزَّنة تُفقَد عند أول نشر
+// لاحق يُعيد كتابة الملف كاملاً بناءً عليها. لذلك أضفت `cache: "no-store"` +
+// معامل رابط لكسر أي كاش وسيط (CDN) لا يحترم رؤوس الطلب نفسها.
 
 async function fetchSubjects() {
-  const res = await fetch(`${import.meta.env.BASE_URL}data/study-plan.json`);
+  const res = await fetch(`${import.meta.env.BASE_URL}data/study-plan.json?_=${Date.now()}`, {
+    cache: "no-store",
+  });
   if (!res.ok) throw new Error("تعذّر تحميل قائمة المواد");
   const data = await res.json();
   return data?.courses ?? [];

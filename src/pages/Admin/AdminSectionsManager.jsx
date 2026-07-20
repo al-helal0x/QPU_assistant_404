@@ -13,21 +13,31 @@ import { buildSubjectPackage } from "../../lib/githubPublisher.js";
 // هنا يُنشَر فعلياً، لكن زري "أعلى/أسفل" بـ SectionsManager لإعادة الترتيب لن
 // يظهر أثرهما بالحزمة المنشورة فعلياً — قيد معروف بتطبيق عضو 5 الحالي، ذكرته
 // بسجلي (member-3-log.md) للمراجعة.
+//
+// ⚠️ إصلاح (تقرير عضو 6 — نفس السبب الجذري الموثَّق بـ AdminSubjectEditor.jsx):
+// `studyPlan`/`subjectDetail`/`sections` هنا كلها أساس كتابة (existingStudyPlan/
+// existingSubject/existingLectures) لأي نشر من هذي الصفحة. `fetch()` العادي قابل
+// لإرجاع نسخة مخزَّنة مؤقتاً بدل الأحدث فعلياً على main، فتُفقَد إضافات/تعديلات
+// سابقة عند أول نشر لاحق من هنا. كل القراءات الآن `cache: "no-store"` + كسر كاش.
+
+function noStoreUrl(path) {
+  return `${import.meta.env.BASE_URL}${path}?_=${Date.now()}`;
+}
 
 async function fetchStudyPlan() {
-  const res = await fetch(`${import.meta.env.BASE_URL}data/study-plan.json`);
+  const res = await fetch(noStoreUrl("data/study-plan.json"), { cache: "no-store" });
   if (!res.ok) return { courses: [] };
   return res.json();
 }
 
 async function fetchSubjectDetail(id) {
-  const res = await fetch(`${import.meta.env.BASE_URL}data/subjects/${id}/subject.json`);
+  const res = await fetch(noStoreUrl(`data/subjects/${id}/subject.json`), { cache: "no-store" });
   if (!res.ok) return null;
   return res.json();
 }
 
 async function fetchLectures(id, filename) {
-  const res = await fetch(`${import.meta.env.BASE_URL}data/subjects/${id}/${filename}`);
+  const res = await fetch(noStoreUrl(`data/subjects/${id}/${filename}`), { cache: "no-store" });
   if (!res.ok) return { sections: [] };
   return res.json();
 }
