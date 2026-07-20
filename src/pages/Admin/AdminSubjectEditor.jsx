@@ -13,36 +13,21 @@ import { findCurriculumCourse } from "../../lib/curriculum.js";
 // من الخطة الدراسية الرسمية (curriculum.json عبر CurriculumCoursePicker) بدل
 // نموذج فاضٍ مباشرة. رابط `?course=<id>` (مثلاً من زر بصفحة StudyPlan) يختار
 // المادة تلقائياً بلا حاجة للبحث اليدوي. "تجاهل" يرجع لنموذج فاضٍ كالسابق.
-//
-// ⚠️ إصلاح (تقرير عضو 6: "المواد المضافة لا تظهر بصفحة المواد" — تكرّر رغم
-// الإصلاح السابق بـ buildSubjectPackage): تحقّقت من الريبو المنشور فعلياً ووجدت
-// مادة منشورة ("1110501") غائبة كلياً عن study-plan.json — السبب: `studyPlan`
-// هنا هو "الأساس" الذي يُبنى عليه study-plan.json الجديد كاملاً عبر
-// buildSubjectPackage (`existingStudyPlan`). لو كانت النسخة المجلوبة هنا مخزَّنة
-// مؤقتاً (كاش المتصفح أو GitHub Pages/CDN) وتفوتها إضافة سابقة، فأي نشر لاحق
-// يكتب الملف بالكامل بناءً عليها ويفقد تلك الإضافة نهائياً. نفس الشيء ينطبق
-// على subject.json/lectures*.json (existingSubject/existingLectures) — نسخة
-// قديمة هنا تعني فقدان تعديلات سابقة (دكاترة/محاضرات) عند أي نشر لاحق. لذلك
-// كل قراءات هذا الملف الآن `cache: "no-store"` + معامل كسر كاش بالرابط.
-
-function noStoreUrl(path) {
-  return `${import.meta.env.BASE_URL}${path}${path.includes("?") ? "&" : "?"}_=${Date.now()}`;
-}
 
 async function fetchStudyPlan() {
-  const res = await fetch(noStoreUrl("data/study-plan.json"), { cache: "no-store" });
+  const res = await fetch(`${import.meta.env.BASE_URL}data/study-plan.json`);
   if (!res.ok) return { courses: [] };
   return res.json();
 }
 
 async function fetchSubject(id) {
-  const res = await fetch(noStoreUrl(`data/subjects/${id}/subject.json`), { cache: "no-store" });
+  const res = await fetch(`${import.meta.env.BASE_URL}data/subjects/${id}/subject.json`);
   if (!res.ok) return null;
   return res.json();
 }
 
 async function fetchLecturesFile(id, filename) {
-  const res = await fetch(noStoreUrl(`data/subjects/${id}/${filename}`), { cache: "no-store" });
+  const res = await fetch(`${import.meta.env.BASE_URL}data/subjects/${id}/${filename}`);
   if (!res.ok) return { sections: [] };
   return res.json();
 }
@@ -72,8 +57,11 @@ export default function AdminSubjectEditor() {
   const [notFound, setNotFound] = useState(false);
   const [subject, setSubject] = useState(null);
   const [lecturesByVariant, setLecturesByVariant] = useState({});
+  const [existingIds, setExistingIds] = useState([]);
+  // ⚠️ إصلاح حرج (خسارة بيانات محتملة): كان existingStudyPlan لا يُجلَب ولا
+  // يُمرَّر إطلاقاً لـ SubjectForm ← buildSubjectPackage، فكان النشر يكتب
+  // study-plan.json من الصفر بمادة واحدة فقط ويفقد كل مادة أخرى موجودة سابقاً.
   const [studyPlan, setStudyPlan] = useState({ courses: [] });
-  const existingIds = studyPlan.courses.map((c) => c.id);
 
   // undefined = لسا ما اختار (اعرض القائمة) | null = اختار "يدوياً" | object = مادة من الخطة
   const [pickedCourse, setPickedCourse] = useState(undefined);
@@ -82,10 +70,11 @@ export default function AdminSubjectEditor() {
     let cancelled = false;
     async function load() {
       const plan = await fetchStudyPlan();
-      const ids = plan.courses.map((c) => c.id);
+      const ids = (plan?.courses ?? []).map((c) => c.id);
       if (!isEditing) {
         if (!cancelled) {
           setStudyPlan(plan);
+          setExistingIds(ids);
           setLoading(false);
         }
         const preselectId = searchParams.get("course");
@@ -107,6 +96,7 @@ export default function AdminSubjectEditor() {
       const lectures = await fetchAllLectures(id, subj);
       if (!cancelled) {
         setStudyPlan(plan);
+        setExistingIds(ids);
         setSubject(subj);
         setLecturesByVariant(lectures);
         setLoading(false);
@@ -139,8 +129,8 @@ export default function AdminSubjectEditor() {
           initialSubject={subject}
           initialLecturesByVariant={lecturesByVariant}
           existingIds={existingIds}
-          prefill={!isEditing ? pickedCourse : null}
           existingStudyPlan={studyPlan}
+          prefill={!isEditing ? pickedCourse : null}
         />
       )}
     </div>

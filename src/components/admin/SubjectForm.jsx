@@ -38,8 +38,8 @@ export default function SubjectForm({
   initialSubject = null,
   initialLecturesByVariant = {},
   existingIds = [],
+  existingStudyPlan = null,
   prefill = null,
-  existingStudyPlan = { courses: [] },
 }) {
   const isEditing = Boolean(initialSubject?.id);
   const existingVariants = initialSubject?.professorVariants ?? [];
@@ -169,7 +169,9 @@ export default function SubjectForm({
           : {}),
         ...(initialSubject ? { existingSubject: initialSubject } : {}),
         existingLectures: { sections },
-        existingStudyPlan,
+        // ⚠️ إصلاح حرج: بدون هذا الحقل، buildSubjectPackage يبني study-plan.json
+        // من الصفر بمادة واحدة فقط ويفقد كل مادة أخرى موجودة سابقاً بالملف.
+        existingStudyPlan: existingStudyPlan || { courses: [] },
       };
 
       const built = buildSubjectPackage({ subjectMeta, files: filesForPackage });
@@ -340,7 +342,7 @@ export default function SubjectForm({
 
       <section className="rounded-lg border border-border bg-bg-subtle p-4">
         <h2 className="mb-3 text-sm font-semibold text-text-h">رفع ملفات PDF جديدة</h2>
-        <FileUploaderWidget onFilesSelected={handleFilesSelected} />
+        <FileUploaderWidget key={uploaderResetKey} onFilesSelected={handleFilesSelected} />
 
         {rawFiles.length > 0 && (
           <div className="mt-4 flex flex-col gap-2">
@@ -395,7 +397,7 @@ export default function SubjectForm({
         {buildError && (
           <p className="mb-3 text-xs text-danger-text">تعذّر تجهيز حزمة النشر: {buildError}</p>
         )}
-        <PublishPanel pkg={pkg} />
+        <PublishPanel pkg={pkg} onPublishSuccess={handlePublishSuccess} />
       </section>
     </div>
   );

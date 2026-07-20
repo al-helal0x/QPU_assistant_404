@@ -10,7 +10,7 @@ import React, { useState } from "react";
 import { publishToGitHub, exportPackageAsZip } from "../../lib/githubPublisher.js";
 import { getStoredToken, DEFAULT_OWNER, DEFAULT_REPO } from "../../lib/adminAuth.js";
 
-export default function PublishPanel({ pkg }) {
+export default function PublishPanel({ pkg, onPublishSuccess }) {
   // خطة الدفعة 4، المهمة 1: نفس توكن دخول لوحة التحكم (AdminAuthGate، عضو 3) يُستخدم
   // هنا مباشرة لو موجود ومصادَق عليه مسبقاً — يتخطى حقل الإدخال كلياً بهذي الحالة.
   const storedToken = getStoredToken();
@@ -39,6 +39,9 @@ export default function PublishPanel({ pkg }) {
       });
       setResult(res);
       setStatus("success");
+      // ⚠️ الملفات فعلياً وصلت GitHub (دُمجت أو بانتظار مراجعة PR) — لازم تصفير
+      // القائمة هنا لمنع نشر نفس الملفات مرة ثانية بالغلط لو ضُغط "نشر" مجدداً.
+      onPublishSuccess?.();
     } catch (err) {
       setError(err.message || "فشل النشر");
       setStatus("error");
