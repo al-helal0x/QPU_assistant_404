@@ -33,7 +33,13 @@
           "title": "دارات_نظري_6",
           "file": "lecture-06.pdf",
           "hidden": false
-        },
+        }
+      ]
+    },
+    {
+      "section": "lab",
+      "hidden": false,
+      "items": [
         {
           "title": "دارات_عملي_1",
           "file": "دارات_عملي_1.pdf",
@@ -55,11 +61,6 @@
           "hidden": false
         }
       ]
-    },
-    {
-      "section": "lab",
-      "hidden": false,
-      "items": []
     }
   ]
 }
