@@ -31,12 +31,23 @@ export default function CurriculumCoursePicker({ existingIds, onPick }) {
   }, [courses, query]);
 
   const grouped = useMemo(() => {
-    const byYear = new Map();
+    // ⚠️ إصلاح: مواد بلا year (مثل المتطلبات الاختيارية) كانت تُجمَّع تحت
+    // مفتاح year=null فتظهر بعنوان "السنة null" وترتيب غير صحيح. الآن تُجمَّع
+    // تحت semesterLabel الخاص بها (مثلاً "متطلبات الجامعة الاختيارية")،
+    // وتُعرض بعد كل السنوات المرقَّمة.
+    const byGroup = new Map();
     for (const c of filtered) {
-      if (!byYear.has(c.year)) byYear.set(c.year, []);
-      byYear.get(c.year).push(c);
+      const key = c.year != null ? `year-${c.year}` : `group-${c.semesterLabel}`;
+      if (!byGroup.has(key)) {
+        byGroup.set(key, {
+          label: c.year != null ? `السنة ${c.year}` : c.semesterLabel,
+          sortKey: c.year != null ? c.year : Infinity,
+          items: [],
+        });
+      }
+      byGroup.get(key).items.push(c);
     }
-    return Array.from(byYear.entries()).sort((a, b) => a[0] - b[0]);
+    return Array.from(byGroup.values()).sort((a, b) => a.sortKey - b.sortKey);
   }, [filtered]);
 
   if (courses === null) {
@@ -71,11 +82,11 @@ export default function CurriculumCoursePicker({ existingIds, onPick }) {
         </p>
       ) : (
         <div className="flex max-h-80 flex-col gap-3 overflow-y-auto">
-          {grouped.map(([year, list]) => (
-            <div key={year}>
-              <div className="mb-1 text-xs font-bold text-text-muted">السنة {year}</div>
+          {grouped.map((g) => (
+            <div key={g.label}>
+              <div className="mb-1 text-xs font-bold text-text-muted">{g.label}</div>
               <div className="flex flex-col gap-1">
-                {list.map((c) => (
+                {g.items.map((c) => (
                   <button
                     key={c.id}
                     type="button"

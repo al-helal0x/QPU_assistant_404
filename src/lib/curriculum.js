@@ -39,6 +39,18 @@ export async function fetchFlatCurriculum() {
     }
   }
 
+  // ⚠️ إصلاح: مواد "المتطلبات الاختيارية" (electiveGroups بـ curriculum.json)
+  // غير مرتبطة بسنة/مستوى، فما كانت تُسطَّح هنا إطلاقاً — يعني لا تظهر أبداً
+  // بمنتقي المقررات بلوحة التحكم (AdminSubjectEditor → CurriculumCoursePicker)
+  // رغم وجودها فعلياً بـ curriculum.json. year/level هنا null عمداً (لا ينطبقان)،
+  // وsemesterLabel = اسم المجموعة (مثلاً "متطلبات الجامعة الاختيارية").
+  for (const group of data?.electiveGroups ?? []) {
+    const base = { year: null, level: null, semesterLabel: group.label };
+    for (const c of group.courses ?? []) {
+      addOrMergeCourse(byId, c, base, null);
+    }
+  }
+
   cachedFlat = Array.from(byId.values());
   return cachedFlat;
 }
