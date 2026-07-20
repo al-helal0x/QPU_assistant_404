@@ -1,0 +1,14 @@
+{
+  "id": "1110501",
+  "name": "مبادئ البرمجة",
+  "code": "1110501",
+  "hidden": false,
+  "professorVariants": [
+    {
+      "professorId": "الدكتورة",
+      "professorName": "د. ندى",
+      "active": true,
+      "lecturesFile": "lectures-الدكتورة.json"
+    }
+  ]
+}
