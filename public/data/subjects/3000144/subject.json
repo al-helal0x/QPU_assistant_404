@@ -6,8 +6,8 @@
   "professorVariants": [
     {
       "professorId": "د.",
-      "professorName": "يوسف علي",
-      "active": true,
+      "professorName": "يوشع سليمان",
+      "active": false,
       "lecturesFile": "lectures-د..json"
     }
   ]
