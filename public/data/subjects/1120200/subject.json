@@ -2,5 +2,13 @@
   "id": "1120200",
   "name": "الإلكترونيات (1)",
   "code": "1120200",
-  "hidden": false
+  "hidden": false,
+  "professorVariants": [
+    {
+      "professorId": "دكتور شحادة",
+      "professorName": "د. شحادة المرعي",
+      "active": true,
+      "lecturesFile": "lectures-دكتور شحادة.json"
+    }
+  ]
 }
