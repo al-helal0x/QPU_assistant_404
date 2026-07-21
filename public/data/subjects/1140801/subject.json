@@ -1,0 +1,14 @@
+{
+  "id": "1140801",
+  "name": "بروتوكولات الشبكات",
+  "code": "1140801",
+  "hidden": false,
+  "professorVariants": [
+    {
+      "professorId": "د.",
+      "professorName": "عدنان بيازيد",
+      "active": true,
+      "lecturesFile": "lectures-د..json"
+    }
+  ]
+}
