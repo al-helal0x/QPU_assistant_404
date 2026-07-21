@@ -1,15 +1,3 @@
 {
-  "sections": [
-    {
-      "section": "theory",
-      "hidden": false,
-      "items": [
-        {
-          "title": "المحاضرة الأولى صحة عامة",
-          "file": "المحاضرة_الأولى_صحة_عامة.pdf",
-          "hidden": false
-        }
-      ]
-    }
-  ]
+  "sections": []
 }
