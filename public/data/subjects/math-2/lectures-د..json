@@ -10,6 +10,17 @@
           "hidden": false
         }
       ]
+    },
+    {
+      "section": "extra",
+      "hidden": false,
+      "items": [
+        {
+          "title": "2_رياضيات 2",
+          "file": "2_رياضيات_2.pdf",
+          "hidden": false
+        }
+      ]
     }
   ]
 }
