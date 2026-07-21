@@ -5,12 +5,6 @@
   "hidden": false,
   "professorVariants": [
     {
-      "professorId": "د.",
-      "professorName": "وعد الزعبي",
-      "active": true,
-      "lecturesFile": "lectures-د..json"
-    },
-    {
       "professorId": "د. روعة",
       "professorName": "د. روعة النحاس",
       "active": false,
