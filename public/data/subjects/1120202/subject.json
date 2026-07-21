@@ -1,0 +1,14 @@
+{
+  "id": "1120202",
+  "name": "الإلكترونيات (2)",
+  "code": "1120202",
+  "hidden": false,
+  "professorVariants": [
+    {
+      "professorId": "م.",
+      "professorName": "زهير البيك",
+      "active": true,
+      "lecturesFile": "lectures-م..json"
+    }
+  ]
+}
