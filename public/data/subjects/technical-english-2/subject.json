@@ -9,6 +9,12 @@
       "professorName": "وعد الزعبي",
       "active": true,
       "lecturesFile": "lectures-د..json"
+    },
+    {
+      "professorId": "د. روعة",
+      "professorName": "د. روعة النحاس",
+      "active": false,
+      "lecturesFile": "lectures-د. روعة.json"
     }
   ]
 }
