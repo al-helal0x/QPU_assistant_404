@@ -2,5 +2,13 @@
   "id": "4110000",
   "name": "الفيزياء (1)",
   "code": "4110000",
-  "hidden": false
+  "hidden": false,
+  "professorVariants": [
+    {
+      "professorId": "د. يونس فطوم",
+      "professorName": "د. يونس فطوم",
+      "active": true,
+      "lecturesFile": "lectures-د. يونس فطوم.json"
+    }
+  ]
 }
