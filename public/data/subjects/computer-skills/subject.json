@@ -2,5 +2,13 @@
   "id": "computer-skills",
   "name": "مهارات الحاسوب",
   "code": "1110500",
-  "hidden": false
+  "hidden": false,
+  "professorVariants": [
+    {
+      "professorId": "دكتور",
+      "professorName": "إميل جرجس",
+      "active": true,
+      "lecturesFile": "lectures-دكتور.json"
+    }
+  ]
 }
