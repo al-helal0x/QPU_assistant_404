@@ -1,0 +1,22 @@
+{
+  "id": "circuits",
+  "name": "الدارات الكهربائية - 1",
+  "code": "1130700",
+  "hidden": false,
+  "professorVariants": [
+    {
+      "professorId": "prof-ahmad",
+      "professorName": "أحمد العريفي",
+      "active": true,
+      "lecturesFile": "lectures-prof-ahmad.json",
+      "role": "theory"
+    },
+    {
+      "professorId": "prof-ali",
+      "professorName": "علي",
+      "active": false,
+      "lecturesFile": "lectures-prof-ali.json",
+      "role": "theory"
+    }
+  ]
+}

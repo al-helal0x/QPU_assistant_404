@@ -1,0 +1,15 @@
+{
+  "id": "arabic-language-1",
+  "name": "اللغة العربية (1)",
+  "code": "3110000",
+  "hidden": false,
+  "professorVariants": [
+    {
+      "professorId": "prof-rima-diab",
+      "professorName": "ريما دياب",
+      "active": true,
+      "lecturesFile": "lectures-prof-rima-diab.json",
+      "role": "theory"
+    }
+  ]
+}

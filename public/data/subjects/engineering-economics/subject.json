@@ -1,0 +1,15 @@
+{
+  "id": "engineering-economics",
+  "name": "الاقتصاد الهندسي",
+  "code": "2210002",
+  "hidden": false,
+  "professorVariants": [
+    {
+      "professorId": "prof-mohammad-habib",
+      "professorName": "محمد حبيب",
+      "active": true,
+      "lecturesFile": "lectures-prof-mohammad-habib.json",
+      "role": "theory"
+    }
+  ]
+}

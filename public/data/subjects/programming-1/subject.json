@@ -1,0 +1,15 @@
+{
+  "id": "programming-1",
+  "name": "برمجة (1)",
+  "code": "1110502",
+  "hidden": false,
+  "professorVariants": [
+    {
+      "professorId": "prof-alaa-sarhan",
+      "professorName": "علاء السرحان",
+      "active": true,
+      "lecturesFile": "lectures-prof-alaa-sarhan.json",
+      "role": "theory"
+    }
+  ]
+}

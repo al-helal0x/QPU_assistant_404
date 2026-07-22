@@ -1,0 +1,15 @@
+{
+  "id": "signals-and-systems",
+  "name": "تحليل النظم والإشارات",
+  "code": "1120900",
+  "hidden": false,
+  "professorVariants": [
+    {
+      "professorId": "prof-khawla-qassas",
+      "professorName": "خولة قصاص",
+      "active": true,
+      "lecturesFile": "lectures-prof-khawla-qassas.json",
+      "role": "theory"
+    }
+  ]
+}
