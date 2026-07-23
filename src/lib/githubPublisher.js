@@ -10,10 +10,6 @@
 //     hidden?: boolean,
 //     professorId?: string,       // إن وُجد → وضع تعدد الدكاترة (القسم 4.3)
 //     professorName?: string,
-//     role?: "theory"|"lab",      // ⚠️ جديد 2026-07-22: اختياري — دكتور نظري/عملي
-//                                  // منفصلين لنفس المادة، يتعايشان نشِطَين معاً
-//                                  // (بعكس السلوك الافتراضي: نشِط واحد بحد أقصى
-//                                  // لكل المادة لو role غائب). انظر professorVariants.js.
 //     setActive?: boolean,        // هل يصبح هذا الدكتور النشِط؟ إن لم تُمرَّر صراحة:
 //                                  // دكتور موجود مسبقاً يحافظ على حالة active السابقة كما هي،
 //                                  // ودكتور جديد كلياً يصير active فقط لو كان الأول إطلاقاً
@@ -162,12 +158,6 @@ export function buildSubjectPackage({ subjectMeta, items = [] }) {
       professorName: subjectMeta.professorName || subjectMeta.professorId,
       active: shouldBeActive,
       lecturesFile: lecturesFileName,
-      // ⚠️ جديد 2026-07-22 (دكتور نظري/عملي منفصلين): role اختياري تماماً —
-      // غيابه (undefined) = دكتور عام بالسلوك القديم كاملاً. لا نكتب الحقل
-      // أصلاً لو غير موجود (بدل role: undefined) حفاظاً على نظافة JSON
-      // للمواد التي لا تستخدم الميزة، ومنعاً لأي فرق سلوكي غير مقصود بين
-      // "role غائب" و"role = undefined صراحة".
-      ...(subjectMeta.role ? { role: subjectMeta.role } : {}),
     };
 
     let variants;
@@ -176,18 +166,11 @@ export function buildSubjectPackage({ subjectMeta, items = [] }) {
     } else {
       variants = [...prevVariants, newVariant];
     }
-    // ⚠️ 2026-07-22 (دكتور نظري/عملي منفصلين): لو صار هذا الدكتور نشطاً،
-    // التعطيل يشمل فقط من يشارك نفس role — نظري وعملي يتعايشان نشِطَين
-    // بنفس الوقت. المادة بلا role إطلاقاً (لا هذا الدكتور ولا غيره) تحافظ
-    // على السلوك القديم بالضبط: تعطيل كل شيء آخر (نشِط واحد بحد أقصى).
+    // لو صار هذا الدكتور نشطاً، نطفئ البقية (نشِط واحد فقط في كل لحظة)
     if (shouldBeActive) {
-      variants = variants.map((v) => {
-        if (v.professorId === subjectMeta.professorId) return v;
-        if (subjectMeta.role) {
-          return v.role === subjectMeta.role ? { ...v, active: false } : v;
-        }
-        return { ...v, active: false };
-      });
+      variants = variants.map((v) =>
+        v.professorId === subjectMeta.professorId ? v : { ...v, active: false }
+      );
     }
     subjectJson.professorVariants = variants;
   } else if (subjectMeta.existingSubject?.professorVariants) {
@@ -212,12 +195,7 @@ export function buildSubjectPackage({ subjectMeta, items = [] }) {
   );
 
   function uniqueFileName(title, fallback, ext) {
-    // ⚠️ إصلاح 2026-07-22: "file" وليس "ملف" — sanitizeFileTitle يضمن الآن
-    // ASCII دائماً، فلا يجوز لبديل الفشل الأخير (حين يفشل التحويل من title
-    // ومن fallback معاً، مثل عنوان بأرقام عربية شرقية غير موجودة بخريطة
-    // التحويل) أن يُعيد إدخال حرف غير ASCII باسم الملف — هذا بالضبط نفس فئة
-    // الخلل الذي بُني هذا الإصلاح بالكامل لسده.
-    const base = sanitizeFileTitle(title) || sanitizeFileTitle(fallback) || "file";
+    const base = sanitizeFileTitle(title) || sanitizeFileTitle(fallback) || "ملف";
     let fileName = `${base}.${ext}`;
     let i = 2;
     while (usedNames.has(fileName)) {
@@ -672,14 +650,12 @@ export async function exportPackageAsZip(pkg) {
     zip.file(pdf.path, pdf.file);
   }
 
-  // طبقة حماية إضافية فقط، ليست الدفاع الأساسي (تصحيح تعليق سابق غير دقيق،
-  // 2026-07-22): JSZip يكتب أسماء الملفات بترميز UTF-8 وراية EFS دائماً بغض
-  // النظر عن قيمة platform — خيار platform يؤثر فقط على بايت "صلاحيات
-  // النظام" الوصفي بالـ metadata، لا على ترميز الاسم نفسه. السبب الحقيقي
-  // للتلف الأصلي ("lectures-الدكتورة.json") كان وجود حرف عربي خام باسم
-  // الملف من الأساس، وهذا مُعالَج فعلياً بإجبار ASCII عبر sanitizeFileTitle/
-  // lecturesFileName أعلاه — هذا هو الدفاع الحقيقي والوحيد الموثوق. الخيار
-  // هنا مُبقى فقط لأنه غير ضار، لا لأنه يحل شيئاً بذاته.
+  // طبقة حماية إضافية (خطة إصلاح ASCII §4.7 المحدَّثة، §3.3): platform: "UNIX"
+  // يفرض ترميز UTF-8 القياسي بحقول ZIP metadata (بدل الترميز الافتراضي
+  // المرتبط بـ DOS الذي كان سبب تلف "lectures-الدكتورة.json" أصلاً عند فك
+  // الضغط على أنظمة مختلفة). طبقة أخيرة فقط — أسماء الملفات نفسها أصلاً
+  // ASCII الآن بفضل sanitizeFileTitle/lecturesFileName أعلاه، حتى لو تسرَّب
+  // نص غير متوقَّع مستقبلاً من مسار لم يُغطَّ بالتحقق.
   const blob = await zip.generateAsync({ type: "blob", platform: "UNIX" });
 
   const url = URL.createObjectURL(blob);

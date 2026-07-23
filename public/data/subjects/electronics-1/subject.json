@@ -2,5 +2,13 @@
   "id": "electronics-1",
   "name": "الإلكترونيات (1)",
   "code": "1120200",
-  "hidden": false
+  "hidden": false,
+  "professorVariants": [
+    {
+      "professorId": "prof-shehade-almaari",
+      "professorName": "د. شحادة المرعي",
+      "active": true,
+      "lecturesFile": "lectures-prof-shehade-almaari.json"
+    }
+  ]
 }

@@ -79,10 +79,6 @@ export default function SubjectForm({
   // تلقائياً عند كتابة اسم دكتور جديد (خطة إصلاح ASCII §4.7 المحدَّثة، §4.1).
   const [newProfessorIdTouched, setNewProfessorIdTouched] = useState(false);
   const [newProfessorName, setNewProfessorName] = useState("");
-  // ⚠️ جديد 2026-07-22 (دكتور نظري/عملي منفصلين): "" = بلا دور (دكتور عام،
-  // السلوك القديم — نشِط واحد بحد أقصى بكل المادة). "theory"/"lab" يسمح
-  // بدكتورَين نشِطين معاً بنفس المادة، كل واحد بقسمه فقط (professorVariants.js).
-  const [newProfessorRole, setNewProfessorRole] = useState("");
   const existingProfessorIds = useMemo(
     () => existingVariants.map((v) => v.professorId),
     [existingVariants]
@@ -118,7 +114,6 @@ export default function SubjectForm({
     setNewProfessorId("");
     setNewProfessorName("");
     setNewProfessorIdTouched(false);
-    setNewProfessorRole("");
   }
 
   // مفتاح بيانات المحاضرات الحالية المعروضة/القابلة للتعديل بـ SectionsManager
@@ -249,10 +244,6 @@ export default function SubjectForm({
               professorId: effectiveProfessorId,
               professorName: isNewProfessor ? newProfessorName || effectiveProfessorId : professorNameOverride,
               setActive,
-              // دكتور جديد: الدور المختار بالنموذج (أو بلا دور). دكتور موجود
-              // يعدَّل الآن: نحافظ على دوره المخزَّن أصلاً (لا تعديل دور من
-              // هذي الشاشة لدكتور موجود — خارج نطاق هذي الميزة).
-              role: isNewProfessor ? newProfessorRole || undefined : selectedExistingVariant?.role,
             }
           : {}),
         ...(initialSubject ? { existingSubject: initialSubject } : {}),
@@ -370,9 +361,7 @@ export default function SubjectForm({
               >
                 {existingVariants.map((v) => (
                   <option key={v.professorId} value={v.professorId}>
-                    {v.professorName}
-                    {v.role === "theory" ? " — نظري" : v.role === "lab" ? " — عملي" : ""}{" "}
-                    {v.active ? "(نشِط حالياً)" : ""}
+                    {v.professorName} {v.active ? "(نشِط حالياً)" : ""}
                   </option>
                 ))}
                 <option value={NEW_PROFESSOR_VALUE}>+ دكتور جديد</option>
@@ -383,21 +372,9 @@ export default function SubjectForm({
                   <input
                     value={newProfessorName}
                     onChange={(e) => handleNewProfessorNameChange(e.target.value)}
-                    placeholder="اسم الدكتور فقط، بلا لقب (مثال: أحمد العريفي)"
+                    placeholder="اسم الدكتور (مثال: د. أحمد)"
                     className="min-w-0 flex-1 rounded-md border border-border bg-bg px-2 py-1 text-sm text-text"
                   />
-                  {/* ⚠️ 2026-07-22: لا يُكتَب "د." أو "الدكتور" هنا — اللقب
-                      "دكتور المادة: " يُضاف تلقائياً عند العرض بصفحة المادة
-                      (Subject.jsx)، ثابتاً بنفس الصيغة دائماً. */}
-                  <select
-                    value={newProfessorRole}
-                    onChange={(e) => setNewProfessorRole(e.target.value)}
-                    className="rounded-md border border-border bg-bg px-2 py-1 text-sm text-text"
-                  >
-                    <option value="">بلا دور (دكتور عام للمادة)</option>
-                    <option value="theory">دكتور نظري</option>
-                    <option value="lab">دكتور عملي</option>
-                  </select>
                   <div className="flex min-w-0 flex-1 flex-col gap-1">
                     <input
                       value={newProfessorId}
@@ -432,15 +409,6 @@ export default function SubjectForm({
                   onChange={(e) => setSetActive(e.target.checked)}
                 />
                 اجعله الدكتور النشِط (المعروض افتراضياً للطلاب)
-                {(isNewProfessor ? newProfessorRole : selectedExistingVariant?.role) && (
-                  <span className="text-text-muted">
-                    — لن يُعطِّل دكتور{" "}
-                    {(isNewProfessor ? newProfessorRole : selectedExistingVariant?.role) === "theory"
-                      ? "العملي"
-                      : "النظري"}{" "}
-                    الآخر، فقط الدور المطابق
-                  </span>
-                )}
               </label>
             </div>
             {!professorIdValid && (

@@ -6,10 +6,9 @@
   "professorVariants": [
     {
       "professorId": "prof-mohammad-habib",
-      "professorName": "محمد حبيب",
+      "professorName": "د. محمد حبيب",
       "active": true,
-      "lecturesFile": "lectures-prof-mohammad-habib.json",
-      "role": "theory"
+      "lecturesFile": "lectures-prof-mohammad-habib.json"
     }
   ]
 }

@@ -6,10 +6,9 @@
   "professorVariants": [
     {
       "professorId": "prof-naser-alnaser",
-      "professorName": "ناصر الناصر",
+      "professorName": "د. ناصر الناصر",
       "active": true,
-      "lecturesFile": "lectures-prof-naser-alnaser.json",
-      "role": "theory"
+      "lecturesFile": "lectures-prof-naser-alnaser.json"
     }
   ]
 }
