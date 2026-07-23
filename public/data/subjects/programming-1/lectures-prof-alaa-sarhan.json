@@ -47,6 +47,18 @@
       ]
     },
     {
+      "section": "lab",
+      "hidden": false,
+      "items": [
+        {
+          "type": "image",
+          "title": "كود القسمة",
+          "file": "kwd_alqsma.jpg",
+          "hidden": false
+        }
+      ]
+    },
+    {
       "section": "exam",
       "hidden": false,
       "items": [
