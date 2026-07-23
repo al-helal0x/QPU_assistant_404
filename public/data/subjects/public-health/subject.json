@@ -5,10 +5,10 @@
   "hidden": false,
   "professorVariants": [
     {
-      "professorId": "prof-yousef-ali",
-      "professorName": "يوسف علي",
+      "professorId": "prof-youshaa-sulaiman",
+      "professorName": "يوشع سليمان",
       "active": true,
-      "lecturesFile": "lectures-prof-yousef-ali.json",
+      "lecturesFile": "lectures-prof-youshaa-sulaiman.json",
       "role": "theory"
     }
   ]
