@@ -1,6 +1,30 @@
 {
   "sections": [
     {
+      "section": "theory",
+      "hidden": false,
+      "items": [
+        {
+          "type": "pdf",
+          "title": "تجربة_1_إعداد شبكة بسيطة",
+          "file": "tjrba1iadad_shbka_bsyta.pdf",
+          "hidden": false
+        },
+        {
+          "type": "pdf",
+          "title": "تجربة_2_إعداد شبكة حاسوبية مع توزيع آلي للعناوين المنطقية",
+          "file": "tjrba2iadad_shbka_haswbya_ma_twzya_aaly_llanawyn_almntqya.pdf",
+          "hidden": false
+        },
+        {
+          "type": "pdf",
+          "title": "تجربة_3_إعداد شبكة حاسوبية مع توزيع آلي للعناوين المنطقية باستخدام المبدل",
+          "file": "tjrba3iadad_shbka_haswbya_ma_twzya_aaly_llanawyn_almntqya_bastkhdam_almbdl.pdf",
+          "hidden": false
+        }
+      ]
+    },
+    {
       "section": "extra",
       "hidden": false,
       "items": [
