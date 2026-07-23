@@ -9,6 +9,18 @@
           "title": "1_CN_QPU_introduction",
           "file": "1cnqpuintroduction.pdf",
           "hidden": false
+        },
+        {
+          "type": "pdf",
+          "title": "2_CN_QPU_NetworkClassification",
+          "file": "2cnqpunetworkclassification.pdf",
+          "hidden": false
+        },
+        {
+          "type": "pdf",
+          "title": "3_CN_QPU_NewtworkOSIModel",
+          "file": "3cnqpunewtworkosimodel.pdf",
+          "hidden": false
         }
       ]
     },
