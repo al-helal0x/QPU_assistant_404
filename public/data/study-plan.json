@@ -107,6 +107,12 @@
       "name": "اللغة العربية (2)",
       "code": "3120001",
       "hidden": false
+    },
+    {
+      "id": "computer-networks",
+      "name": "شبكات الحاسوب",
+      "code": "1130800",
+      "hidden": false
     }
   ]
 }
