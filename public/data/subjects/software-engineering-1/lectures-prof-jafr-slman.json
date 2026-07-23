@@ -1,0 +1,46 @@
+{
+  "sections": [
+    {
+      "section": "theory",
+      "hidden": false,
+      "items": [
+        {
+          "type": "pdf",
+          "title": "هندسة البرمجيات-المحاضرة الأولى",
+          "file": "hndsa_albrmjyat_almhadra_alawla.pdf",
+          "hidden": false
+        },
+        {
+          "type": "pdf",
+          "title": "هندسة البرمجيات-المحاضرة الثانية",
+          "file": "hndsa_albrmjyat_almhadra_althanya.pdf",
+          "hidden": false
+        },
+        {
+          "type": "pdf",
+          "title": "هندسة البرمجيات-المحاضرة الثالثة",
+          "file": "hndsa_albrmjyat_almhadra_althaltha.pdf",
+          "hidden": false
+        },
+        {
+          "type": "pdf",
+          "title": "هندسة البرمجيات-المحاضرة الرابعة",
+          "file": "hndsa_albrmjyat_almhadra_alrabaa.pdf",
+          "hidden": false
+        },
+        {
+          "type": "pdf",
+          "title": "هندسة البرمجيات-المحاضرة الخامسة",
+          "file": "hndsa_albrmjyat_almhadra_alkhamsa.pdf",
+          "hidden": false
+        },
+        {
+          "type": "pdf",
+          "title": "هندسة البرمجيات-المحاضرة السادسة",
+          "file": "hndsa_albrmjyat_almhadra_alsadsa.pdf",
+          "hidden": false
+        }
+      ]
+    }
+  ]
+}

@@ -1,0 +1,14 @@
+{
+  "id": "software-engineering-1",
+  "name": "هندسة البرمجيات (1)",
+  "code": "1141101",
+  "hidden": false,
+  "professorVariants": [
+    {
+      "professorId": "prof-jafr-slman",
+      "professorName": "جعفر سلمان",
+      "active": true,
+      "lecturesFile": "lectures-prof-jafr-slman.json"
+    }
+  ]
+}
