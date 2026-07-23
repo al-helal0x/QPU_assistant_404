@@ -105,11 +105,17 @@ export default function SubjectForm({
   const [professorNameOverride, setProfessorNameOverride] = useState(
     () => selectedExistingVariant?.professorName ?? ""
   );
+  // اختياري: اسم دكتور/مدرّس العملي، لو مختلفاً عن دكتور النظري (لا يؤثر على أي
+  // منطق ملفات — نص عرض فقط بصفحة المادة).
+  const [professorNamePractical, setProfessorNamePractical] = useState(
+    () => selectedExistingVariant?.professorNamePractical ?? ""
+  );
 
   function selectProfessor(id) {
     setProfessorChoice(id);
     const v = existingVariants.find((x) => x.professorId === id);
     setProfessorNameOverride(v?.professorName ?? "");
+    setProfessorNamePractical(v?.professorNamePractical ?? "");
     setSetActive(v?.active ?? existingVariants.length === 0);
     setNewProfessorId("");
     setNewProfessorName("");
@@ -243,6 +249,7 @@ export default function SubjectForm({
           ? {
               professorId: effectiveProfessorId,
               professorName: isNewProfessor ? newProfessorName || effectiveProfessorId : professorNameOverride,
+              professorNamePractical,
               setActive,
             }
           : {}),
@@ -272,6 +279,7 @@ export default function SubjectForm({
     isNewProfessor,
     newProfessorName,
     professorNameOverride,
+    professorNamePractical,
     setActive,
     sections,
     initialSubject,
@@ -372,7 +380,7 @@ export default function SubjectForm({
                   <input
                     value={newProfessorName}
                     onChange={(e) => handleNewProfessorNameChange(e.target.value)}
-                    placeholder="اسم الدكتور (مثال: د. أحمد)"
+                    placeholder="اسم دكتور النظري (مثال: د. أحمد)"
                     className="min-w-0 flex-1 rounded-md border border-border bg-bg px-2 py-1 text-sm text-text"
                   />
                   <div className="flex min-w-0 flex-1 flex-col gap-1">
@@ -398,9 +406,18 @@ export default function SubjectForm({
                 <input
                   value={professorNameOverride}
                   onChange={(e) => setProfessorNameOverride(e.target.value)}
+                  placeholder="اسم دكتور النظري"
                   className="min-w-0 flex-1 rounded-md border border-border bg-bg px-2 py-1 text-sm text-text"
                 />
               )}
+
+              <input
+                value={professorNamePractical}
+                onChange={(e) => setProfessorNamePractical(e.target.value)}
+                placeholder="اسم دكتور/مدرّس العملي (اختياري — اتركه فارغاً لو نفس دكتور النظري)"
+                className="min-w-0 flex-1 rounded-md border border-border bg-bg px-2 py-1 text-sm text-text"
+              />
+
 
               <label className="flex items-center gap-1 text-xs text-text">
                 <input

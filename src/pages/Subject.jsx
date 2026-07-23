@@ -30,7 +30,7 @@ function itemKey(item, idx) {
 
 export default function Subject() {
   const { id } = useParams();
-  const { subject, activeProfessors, lectures, loading, notFound } = useSubjectData(id);
+  const { subject, activeProfessor, lectures, loading, notFound } = useSubjectData(id);
   const { addVisit } = useRecentlyViewed();
   const [openFile, setOpenFile] = useState(null); // { key, title, src, type } | null
 
@@ -62,19 +62,15 @@ export default function Subject() {
     <div>
       <h1 className="text-xl font-bold text-text-h">{subject.name}</h1>
       {subject.code && <p className="text-xs text-text-muted">{subject.code}</p>}
-      {/* ⚠️ 2026-07-22: تسمية موحّدة دائماً "دكتور المادة: {الاسم}" — الاسم
-          وحده يُدخله الآدمن (بلا لقب، انظر SubjectForm.jsx). لو المادة تستخدم
-          دكتورَين منفصلين (نظري/عملي، activeProfessors قد ترجع اثنين)، يُضاف
-          توضيح الدور بين قوسين لتمييزهما — بلا تغيير بالنص الأساسي للمادة
-          العادية (دكتور واحد، بلا role). */}
-      {activeProfessors.length > 0 && (
-        <div className="mt-1 space-y-0.5">
-          {activeProfessors.map((p) => (
-            <p key={p.professorId} className="text-sm text-text-muted">
-              دكتور المادة{p.role === "theory" ? " (نظري)" : p.role === "lab" ? " (عملي)" : ""}:{" "}
-              {p.professorName}
-            </p>
-          ))}
+      {activeProfessor && (
+        <div className="mt-1 text-sm text-text-muted">
+          <p>
+            {activeProfessor.professorNamePractical ? "دكتور النظري: " : "الدكتور: "}
+            {activeProfessor.professorName}
+          </p>
+          {activeProfessor.professorNamePractical && (
+            <p>دكتور العملي: {activeProfessor.professorNamePractical}</p>
+          )}
         </div>
       )}
 
