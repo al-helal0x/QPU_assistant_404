@@ -6,6 +6,18 @@
       "items": [
         {
           "type": "pdf",
+          "title": "1_CN_QPU_introduction",
+          "file": "1cnqpuintroduction.pdf",
+          "hidden": false
+        }
+      ]
+    },
+    {
+      "section": "lab",
+      "hidden": false,
+      "items": [
+        {
+          "type": "pdf",
           "title": "تجربة_1_إعداد شبكة بسيطة",
           "file": "tjrba1iadad_shbka_bsyta.pdf",
           "hidden": false
