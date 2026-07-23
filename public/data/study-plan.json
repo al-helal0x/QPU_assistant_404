@@ -119,6 +119,12 @@
       "name": "بروتوكولات الشبكات",
       "code": "1140801",
       "hidden": false
+    },
+    {
+      "id": "software-engineering-1",
+      "name": "هندسة البرمجيات (1)",
+      "code": "1141101",
+      "hidden": false
     }
   ]
 }
