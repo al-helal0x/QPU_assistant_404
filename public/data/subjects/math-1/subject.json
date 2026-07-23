@@ -9,6 +9,12 @@
       "professorName": "د. ناصر الناصر",
       "active": true,
       "lecturesFile": "lectures-prof-naser-alnaser.json"
+    },
+    {
+      "professorId": "prof-nasr-alnasr",
+      "professorName": "ناصر الناصر",
+      "active": false,
+      "lecturesFile": "lectures-prof-nasr-alnasr.json"
     }
   ]
 }
