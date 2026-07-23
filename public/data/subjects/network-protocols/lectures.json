@@ -1,0 +1,28 @@
+{
+  "sections": [
+    {
+      "section": "theory",
+      "hidden": false,
+      "items": [
+        {
+          "type": "pdf",
+          "title": "بروتوكولات_الشبكة_المحاضرة 1 و 2",
+          "file": "brwtwkwlatalshbkaalmhadra_1_w_2.pdf",
+          "hidden": false
+        }
+      ]
+    },
+    {
+      "section": "lab",
+      "hidden": false,
+      "items": [
+        {
+          "type": "pdf",
+          "title": "تجربة_2_التوجيه الديناميكي باستخدام بروتوكول التوجيه RIP",
+          "file": "tjrba2altwjyh_aldynamyky_bastkhdam_brwtwkwl_altwjyh_rip.pdf",
+          "hidden": false
+        }
+      ]
+    }
+  ]
+}

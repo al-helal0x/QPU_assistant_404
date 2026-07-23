@@ -113,6 +113,12 @@
       "name": "شبكات الحاسوب",
       "code": "1130800",
       "hidden": false
+    },
+    {
+      "id": "network-protocols",
+      "name": "بروتوكولات الشبكات",
+      "code": "1140801",
+      "hidden": false
     }
   ]
 }
