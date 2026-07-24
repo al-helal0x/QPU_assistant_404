@@ -4,16 +4,18 @@ import { useSubjectData } from "../hooks/useSubjectData.js";
 import { SECTION_LABELS } from "../lib/sectionLabels.js";
 import { useRecentlyViewed } from "../hooks/useRecentlyViewed.js";
 import LectureItem from "../components/subject/LectureItem.jsx";
-import FileViewer from "../components/subject/FileViewer.jsx";
 
-// ⚠️ ملف مملوك لعضو 2 — صفحة عرض مادة واحدة (أقسام نظري/عملي/... + عارض ملء الشاشة).
+// ⚠️ ملف مملوك لعضو 2 — صفحة عرض مادة واحدة (أقسام نظري/عملي/... إلخ).
 // يستهلك useSubjectData(id) (عضو 4) و SECTION_LABELS (جاهز) فقط — لا معرفة
 // داخلية بـ professorVariants أو hidden هنا (القسم 4.6 من خطة البناء).
 //
 // التوزيع الجديد (عقد الأنواع): كل عنصر بمصفوفة items له type
-// ("pdf" الافتراضي عند الغياب — توافق عكسي). فقط pdf/image يفتحان
-// FileViewer (نملك هنا حالة "أي عنصر واحد مفتوح" كما كان). link/note لا
-// علاقة لهما بـ openFile إطلاقاً — كل واحد يدير نفسه داخل LectureItem.
+// ("pdf" الافتراضي عند الغياب — توافق عكسي). فقط pdf/image يتحكمان بحالة
+// "أي عنصر واحد مفتوح" هنا (openKey) — لكن العرض الفعلي (قائمة تنزيل/فتح
+// بتبويب جديد) صار مسؤولية LectureItem نفسه الآن (2026-07-24: أزلنا
+// FileViewer كامل الشاشة، كان يوهم مستخدم الهاتف أن الملف = أول صفحة فقط.
+// راجع docs/logs/member-2-log.md). link/note لا علاقة لهما بـ openKey
+// إطلاقاً — كل واحد يدير نفسه داخل LectureItem.
 
 // مسار ملفات pdf/image المنشورة (اتفاق عضو 5): public/pdf/{slug}/...
 // مبني على import.meta.env.BASE_URL عشان يشتغل صح تحت مسار فرعي بـ GitHub Pages.
@@ -32,7 +34,9 @@ export default function Subject() {
   const { id } = useParams();
   const { subject, activeProfessor, lectures, loading, notFound } = useSubjectData(id);
   const { addVisit } = useRecentlyViewed();
-  const [openFile, setOpenFile] = useState(null); // { key, title, src, type } | null
+  // مفتاح العنصر المفتوح حالياً فقط (أو null) — لا نخزّن src/title/type هنا
+  // بعد الآن، LectureItem يبنيها بنفسه من item + src الممرَّر له.
+  const [openKey, setOpenKey] = useState(null);
 
   useEffect(() => {
     if (!loading && !notFound && subject) {
@@ -43,17 +47,9 @@ export default function Subject() {
   if (loading) return <div className="text-text-muted">...جارِ التحميل</div>;
   if (notFound) return <div className="text-text-muted">المادة غير موجودة</div>;
 
-  function toggleFile(item, key) {
-    setOpenFile((prev) =>
-      prev?.key === key
-        ? null
-        : {
-            key,
-            title: item.title,
-            src: fileSrc(id, item.file),
-            type: item.type || "pdf",
-          }
-    );
+  // فتح عنصر ثانٍ يغلق الأول تلقائياً (نفس مفتاح حالة واحد لكل الصفحة).
+  function toggleFile(key) {
+    setOpenKey((prev) => (prev === key ? null : key));
   }
 
   const sections = lectures?.sections || [];
@@ -96,21 +92,13 @@ export default function Subject() {
                   const isViewerType = type === "pdf" || type === "image";
 
                   return (
-                    <React.Fragment key={key}>
-                      <LectureItem
-                        item={item}
-                        isOpen={isViewerType && openFile?.key === key}
-                        onToggle={isViewerType ? () => toggleFile(item, key) : undefined}
-                      />
-                      {isViewerType && openFile?.key === key && (
-                        <FileViewer
-                          src={openFile.src}
-                          title={openFile.title}
-                          type={openFile.type}
-                          onClose={() => setOpenFile(null)}
-                        />
-                      )}
-                    </React.Fragment>
+                    <LectureItem
+                      key={key}
+                      item={item}
+                      isOpen={isViewerType && openKey === key}
+                      onToggle={isViewerType ? () => toggleFile(key) : undefined}
+                      src={isViewerType ? fileSrc(id, item.file) : undefined}
+                    />
                   );
                 })}
               </ul>
