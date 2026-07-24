@@ -5,10 +5,10 @@
   "hidden": false,
   "professorVariants": [
     {
-      "professorId": "prof-naser-alnaser",
-      "professorName": "د. ناصر الناصر",
+      "professorId": "prof-yousef-kajan",
+      "professorName": "د. يوسف كاجان",
       "active": true,
-      "lecturesFile": "lectures-prof-naser-alnaser.json"
+      "lecturesFile": "lectures-prof-yousef-kajan.json"
     }
   ]
 }
