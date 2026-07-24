@@ -361,7 +361,7 @@ export default function SubjectForm({
               value={theoryProfessorLabel}
               onChange={(e) => setTheoryProfessorLabel(e.target.value)}
               className="rounded-md border border-border bg-bg px-3 py-1.5 text-text"
-              placeholder="مثال: د. علاء سرحان"
+              placeholder="مثال: د. أحمد العريفي"
             />
           </label>
           <label className="flex flex-col gap-1 text-sm text-text">
@@ -370,7 +370,7 @@ export default function SubjectForm({
               value={labProfessorLabel}
               onChange={(e) => setLabProfessorLabel(e.target.value)}
               className="rounded-md border border-border bg-bg px-3 py-1.5 text-text"
-              placeholder="مثال: م. عبدو غزالي (يقبل أكثر من اسم بنفس الحقل)"
+              placeholder="(يقبل أكثر من اسم بنفس الحقل)"
             />
           </label>
         </div>
